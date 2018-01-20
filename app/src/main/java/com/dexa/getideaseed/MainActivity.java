@@ -3,7 +3,6 @@ package com.dexa.getideaseed;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,7 +14,6 @@ public class MainActivity extends AppCompatActivity {
     ImageView homeImage,exploreImage;
     TextView homeText,exploreText,homeBar,exploreBar;
     Context context;
-    private SeedViewRecycler recyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +35,9 @@ public class MainActivity extends AppCompatActivity {
         exploreText.setTextColor(getResources().getColor(R.color.lightGreen));
         homeImage.setColorFilter(getResources().getColor(R.color.darkGrey));
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        seedList.setLayoutManager(layoutManager);
-        seedList.setHasFixedSize(true);
-        recyclerAdapter = new SeedViewRecycler(context,5);
-        seedList.setAdapter(recyclerAdapter);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.flSeed,new ExplorerFragment())
+                .commit();
 
         homeImage.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
@@ -55,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         exploreImage.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
+                getFragmentManager().beginTransaction().replace(R.id.flSeed, new ExplorerFragment()).commit();
                 exploreBar.setVisibility(View.VISIBLE);
                 homeBar.setVisibility(View.INVISIBLE);
                 homeText.setTextColor(getResources().getColor(R.color.darkGrey));
@@ -62,7 +59,5 @@ public class MainActivity extends AppCompatActivity {
                 homeImage.setColorFilter(getResources().getColor(R.color.darkGrey));
             }
         });
-
-
     }
 }

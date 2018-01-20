@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 public class SeedViewRecycler extends RecyclerView.Adapter<SeedViewRecycler.NumberViewHolder> {
 
     private Context context;
-    private int numList=10;
+    private int numList;
 
     public SeedViewRecycler(Context context, int numList) {
         this.context = context;
