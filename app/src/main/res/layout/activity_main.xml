@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.dexa.getideaseed.MainActivity"
+    android:background="@color/lightGrey"
+    >
+
+    <TextView
+        android:id="@+id/tvGreenBar"
+        android:layout_width="match_parent"
+        android:layout_height="7dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@color/lightGreen"
+        />
+
+    <FrameLayout
+        android:id="@+id/flSeed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvGreenBar"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvSeedFeed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="24dp"
+            >
+        </android.support.v7.widget.RecyclerView>
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlSeed"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/flSeed"
+        android:background="@color/buttonGreen"
+        >
+
+        <ImageView
+            android:id="@+id/ivHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/home_botton"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="94dp"
+            android:layout_marginBottom="40dp"
+            android:scaleType="fitCenter"
+            />
+
+        <TextView
+            android:id="@+id/tvHomeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="96dp"
+            android:layout_marginBottom="23dp"
+            />
+
+        <TextView
+            android:id="@+id/tvHomeHighlight"
+            android:layout_width="44dp"
+            android:layout_height="7dp"
+            android:background="@color/lightGreen"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="94dp"
+            android:layout_marginBottom="12dp"
+            />
+
+        <ImageView
+            android:id="@+id/ivExplore"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/explore_botton"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="101dp"
+            android:layout_marginBottom="40dp"
+            />
+
+        <TextView
+            android:id="@+id/tvExploreButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Explore"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="96dp"
+            android:layout_marginBottom="23dp"
+            />
+
+        <TextView
+            android:id="@+id/tvExploreHighlight"
+            android:layout_width="52dp"
+            android:layout_height="7dp"
+            android:background="@color/lightGreen"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="92dp"
+            android:layout_marginBottom="12dp"
+            />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>
