@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <ImageView
+        android:id="@+id/ivIdeaProgress"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        />
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ivIdeaProgress"
+        android:layout_margin="20dp"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="8dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvUserProjectName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Project Name"
+                android:textSize="24dp"
+                android:textStyle="italic"
+                android:textColor="@color/black"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                />
+            <TextView
+                android:id="@+id/tvUserProjectDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvUserProjectName"
+                android:text="Project Description"
+                android:textSize="16dp"
+                android:textStyle="italic"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                />
+            <TextView
+                android:id="@+id/tvOriginality"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvUserProjectDescription"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Originality"
+                android:textStyle="italic"
+                android:textSize="18dp"
+                />
+
+            <ProgressBar
+                android:id="@+id/pbUserProjectOriginality"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_below="@id/tvOriginality"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:min="0"
+                android:max="10"
+                style="@style/OriginalityProgressBar"
+                />
+
+            <TextView
+                android:id="@+id/tvUserProjectDifficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pbUserProjectOriginality"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Difficulty"
+                android:textStyle="italic"
+                android:textSize="18dp"
+                />
+
+            <ProgressBar
+                android:id="@+id/pbUserProjectDifficulty"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_below="@id/tvUserProjectDifficulty"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:min="0"
+                android:max="10"
+                style="@style/DifficultyProgressBar"
+                />
+
+            <TextView
+                android:id="@+id/tvUserProjectVisibility"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pbUserProjectDifficulty"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="Visibility"
+                android:textStyle="italic"
+                android:textSize="18dp"
+                />
+
+            <CheckBox
+                android:id="@+id/cbUserProjectVisibility"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvUserProjectVisibility"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                />
+
+            <Button
+                android:id="@+id/btUserProjectEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_button"
+                android:layout_below="@id/cbUserProjectVisibility"
+                android:text="Edit"
+                android:textColor="@color/white"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                />
+            <Button
+                android:id="@+id/btUserProjectFeedback"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_button"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/cbUserProjectVisibility"
+                android:text="Feedback"
+                android:textColor="@color/white"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:padding="12dp"
+                />
+
+            <Button
+                android:id="@+id/btUserProjectDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_cancel_button"
+                android:layout_below="@id/cbUserProjectVisibility"
+                android:text="delete"
+                android:textColor="@color/white"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="20dp"
+                />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+    </RelativeLayout>

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GetIdeaSeed</string>
+    <string name="prompt">Not Yet Started</string>
 </resources>

@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="lightGrey">#e6e7e8</color>
+    <color name="colorPrimary">#2ec97f</color>
+    <color name="colorPrimaryDark">#25a366</color>
+    <color name="colorAccent">#2ec97f</color>
+    <color name="lightGrey">#E6E7E8</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="lightGreen">#2ec97f</color>
+    <color name="darkGreen">#25a366</color>
     <color name="darkGrey">#717374</color>
     <color name="buttonGreen">#00d380</color>
+    <color name="lightBlack">#212529</color>
+    <color name="lightBLack2">#5A6169</color>
+    <color name="transparentBlack">#ad000000</color>
+    <color name="cancelButton">#ff915d</color>
+    <color name="ColorPrimary">#FF5722</color>
+    <color name="ColorPrimaryDark">#E64A19</color>
+    <color name="foreground_material_light">#ffffff</color>
+    <color name="background_material_light">#ffffff</color>
 
 </resources>
