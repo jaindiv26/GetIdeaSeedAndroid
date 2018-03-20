@@ -22,8 +22,8 @@
             android:layout_width="43dp"
             android:layout_height="43dp"
             android:background="@drawable/profile_pic"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
             />
 
         <TextView
@@ -32,9 +32,9 @@
             android:layout_height="wrap_content"
             android:text="Profile name"
             android:textColor="@color/black"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:layout_toRightOf="@id/ivProfilePic"
             />
 
@@ -42,9 +42,9 @@
             android:id="@+id/ivWorkProgress"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_below="@id/ivProfilePic"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_below="@id/tvUsername"
             />
 
         <TextView
@@ -52,24 +52,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/ivWorkProgress"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
             android:text="Originality"
             android:textStyle="italic"
             android:textSize="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
             />
 
         <ProgressBar
             android:id="@+id/pbOriginality"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/OriginalityProgressBar"
             android:layout_below="@id/tvOriginality"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
             android:min="0"
             android:max="10"
-            style="@style/OriginalityProgressBar"
             />
 
         <TextView
@@ -77,22 +77,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/pbOriginality"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
             android:text="Difficulty"
             android:textStyle="italic"
             android:textSize="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
             />
 
         <ProgressBar
             android:id="@+id/pbDifficulty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvDifficulty"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
             style="@style/DifficultyProgressBar"
+            android:layout_below="@id/tvDifficulty"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
             android:min="0"
             android:max="10"
             />
@@ -105,9 +105,10 @@
             android:textStyle="italic"
             android:textSize="36dp"
             android:textColor="@color/lightBlack"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
+            android:fontFamily="@font/poppins"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
             android:layout_below="@id/pbDifficulty"
             />
 
@@ -119,47 +120,58 @@
             android:textSize="16dp"
             android:textColor="@color/lightBLack2"
             android:layout_below="@id/tvProjectTitle"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
             />
 
-        <Button
-            android:id="@+id/btFeedback"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="Give Feedback"
-            android:textSize="12dp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button"
-            android:layout_below="@id/ivBulb"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="20dp"
-            android:padding="8dp"
-            />
-
-        <ImageView
-            android:id="@+id/ivBulb"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/like_bulb_no_like"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/tvProjectDescription"
-            android:layout_marginEnd="32dp"
-            />
-
-        <TextView
-            android:id="@+id/tvNoOfBulb"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4"
-            android:layout_below="@id/ivBulb"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="52dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="20dp"
-            />
+            android:layout_below="@id/tvProjectDescription"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_alignParentRight="true"
+            >
+
+            <ImageView
+                android:id="@+id/ivBulb"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/like_bulb_no_like"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="32dp"
+                />
+
+            <TextView
+                android:id="@+id/tvNoOfBulb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4"
+                android:layout_below="@id/ivBulb"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="52dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="20dp"
+                />
+
+            <Button
+                android:id="@+id/btFeedback"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_button"
+                android:layout_centerVertical="true"
+                android:text="Give Feedback"
+                android:textSize="12dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:layout_marginStart="20dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 

@@ -13,6 +13,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.android.volley.VolleyError;
 
@@ -37,7 +39,9 @@ public class HomeFragment extends Fragment {
     private ProgressDialog progressDialog;
     private FloatingActionButton fabNewIdea;
     private HomeAdapterClickListener homeAdapterClickListener;
-    private int x =0;
+    private RelativeLayout relativeLayout;
+    private ImageView imageView;
+    int x = 0;
 
     public static HomeFragment newInstance(Bundle bundle) {
         HomeFragment instance = new HomeFragment();
@@ -58,11 +62,20 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Bundle datafromActivity = getArguments();
+        String st = datafromActivity.getString("someKey");
+    }
+
     private void initComponents(View view) {
         //1.All fbi
         recyclerView = view.findViewById(R.id.rvNewActivity);
         mSwipeRefreshLayout = view.findViewById(R.id.srSwipeRefresh);
         fabNewIdea = view.findViewById(R.id.fabNewIdea);
+        relativeLayout = view.findViewById(R.id.rvPlantASeed);
+        relativeLayout.setVisibility(view.GONE);
+        imageView = view.findViewById(R.id.ivPlantASeedImage);
         //2. All listeners
 
         // For edit Idea into Adapter
@@ -88,6 +101,12 @@ public class HomeFragment extends Fragment {
             }
         };
 
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                Intent intent = new Intent(context, NewIdeaActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override public void onRefresh() {
@@ -121,12 +140,19 @@ public class HomeFragment extends Fragment {
                         try {
                             JSONObject resultJSONObject = jsonArray.getJSONObject(i);
                             modelExplorerArrayList.add(setter(resultJSONObject));
-
                         }catch (Exception e){
 
                         }
                     }
                     homeAdapter.notifyDataSetChanged();
+                    if(modelExplorerArrayList.size() ==0){
+                        relativeLayout.setVisibility(View.VISIBLE);
+                        fabNewIdea.setVisibility(View.GONE);
+                    }
+                    else{
+                        relativeLayout.setVisibility(View.GONE);
+                        fabNewIdea.setVisibility(View.VISIBLE);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -168,6 +194,14 @@ public class HomeFragment extends Fragment {
                     modelExplorerArrayList.remove(index);
                     // 2. Notify adapter at position.
                     homeAdapter.notifyItemRemoved(index);
+                }
+                if(modelExplorerArrayList.size() ==0){
+                    relativeLayout.setVisibility(View.VISIBLE);
+                    fabNewIdea.setVisibility(View.GONE);
+                }
+                else{
+                    relativeLayout.setVisibility(View.GONE);
+                    fabNewIdea.setVisibility(View.VISIBLE);
                 }
                 progressDialog.dismiss();
             }
@@ -217,6 +251,14 @@ public class HomeFragment extends Fragment {
                     modelExplorer = data.getParcelableExtra("modelExplorerValue");
                     modelExplorerArrayList.add(modelExplorer);
                     homeAdapter.notifyItemInserted(modelExplorerArrayList.size());
+                    if(modelExplorerArrayList.size() ==0){
+                        relativeLayout.setVisibility(View.VISIBLE);
+                        fabNewIdea.setVisibility(View.GONE);
+                    }
+                    else{
+                        relativeLayout.setVisibility(View.GONE);
+                        fabNewIdea.setVisibility(View.VISIBLE);
+                    }
                 }
         }
         if (requestCode == 1010){
@@ -225,6 +267,16 @@ public class HomeFragment extends Fragment {
                 modelExplorer = data.getParcelableExtra("modelExplorerEditValue");
                 modelExplorerArrayList.set(x,modelExplorer);
                 homeAdapter.notifyItemChanged(x);
+
+                if(modelExplorerArrayList.size() ==0){
+                    relativeLayout.setVisibility(View.VISIBLE);
+                    fabNewIdea.setVisibility(View.GONE);
+                }
+                else{
+                    relativeLayout.setVisibility(View.GONE);
+                    fabNewIdea.setVisibility(View.VISIBLE);
+                }
+
             }
         }
     }

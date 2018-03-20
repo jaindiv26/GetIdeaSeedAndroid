@@ -19,7 +19,6 @@
         app:theme="@style/ThemeOverlay.AppCompat"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:titleTextColor="@color/white"
-        app:title=" GetIdeaSeed"
         />
 
     <android.support.v4.view.ViewPager

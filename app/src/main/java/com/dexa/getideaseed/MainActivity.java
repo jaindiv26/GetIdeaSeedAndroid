@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity{
         });
         setSupportActionBar(mainToolbar);
         getSupportActionBar().setIcon(R.drawable.ic_lightbulb_outline_white_24dp);
+        getSupportActionBar().setTitle(" Welcome "+ PrefManager.getInstance().getString("username"));
         exploreBar.setVisibility(View.GONE);
         exploreImage.setColorFilter(getResources().getColor(R.color.darkGrey));
 

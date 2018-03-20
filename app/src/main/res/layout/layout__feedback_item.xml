@@ -20,7 +20,7 @@
             android:textColor="@color/lightGreen"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             />
 
         <TextView
@@ -33,7 +33,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             />
 
     </LinearLayout>
