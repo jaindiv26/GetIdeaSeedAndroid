@@ -3,18 +3,23 @@ package com.dexa.getideaseed;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -33,14 +38,16 @@ public class HomeFragment extends Fragment {
 
     private Context context;
     private RecyclerView recyclerView;
-    private HomeAdapter homeAdapter;
-    private ArrayList<ModelExplorer> modelExplorerArrayList;
+    private ImageView ivSearchIcon;
+    private TextView tvSearchResult;
+    public HomeAdapter homeAdapter;
+    private ArrayList<ModelExplorer> serverArrayList;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressDialog progressDialog;
     private FloatingActionButton fabNewIdea;
     private HomeAdapterClickListener homeAdapterClickListener;
     private RelativeLayout relativeLayout;
-    private ImageView imageView;
+    private RelativeLayout rlEmptyView;
     int x = 0;
 
     public static HomeFragment newInstance(Bundle bundle) {
@@ -58,14 +65,23 @@ public class HomeFragment extends Fragment {
                                                  @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         initComponents(view);
-        fetchData();
+        if(isInternetOn(context)){
+            fetchData();
+        }
+        else {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
         return view;
     }
 
     @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Bundle datafromActivity = getArguments();
-        String st = datafromActivity.getString("someKey");
+        if(isInternetOn(context)){
+            fetchData();
+        }
+        else {
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
     }
 
     private void initComponents(View view) {
@@ -74,8 +90,9 @@ public class HomeFragment extends Fragment {
         mSwipeRefreshLayout = view.findViewById(R.id.srSwipeRefresh);
         fabNewIdea = view.findViewById(R.id.fabNewIdea);
         relativeLayout = view.findViewById(R.id.rvPlantASeed);
-        relativeLayout.setVisibility(view.GONE);
-        imageView = view.findViewById(R.id.ivPlantASeedImage);
+        rlEmptyView = view.findViewById(R.id.rlEmptyView);
+        ivSearchIcon = view.findViewById(R.id.ivDefaultImage);
+        tvSearchResult = view.findViewById(R.id.tvPlantASeed);
         //2. All listeners
 
         // For edit Idea into Adapter
@@ -90,6 +107,7 @@ public class HomeFragment extends Fragment {
                 startActivityForResult(intent,1010);
                 x = position;
             }
+
             @Override public void onDelete(ModelExplorer modelExplorer) {
                 deleteIdea(modelExplorer);
             }
@@ -99,9 +117,32 @@ public class HomeFragment extends Fragment {
                 i.putExtra("feedbackUserData",modelExplorer);
                 startActivity(i);
             }
+
+            @Override public void onNoResultFound(boolean result) {
+                if (result){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            relativeLayout.setVisibility(View.VISIBLE);
+                            ivSearchIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_search_white_24dp));
+                            tvSearchResult.setText("No Results");
+                            rlEmptyView.setClickable(false);
+                        }
+                    });
+
+                }
+                else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            ivSearchIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.tool));
+                            tvSearchResult.setText("Plant A Seed");
+                            relativeLayout.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
         };
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+        rlEmptyView.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 Intent intent = new Intent(context, NewIdeaActivity.class);
                 startActivityForResult(intent, 1);
@@ -110,7 +151,12 @@ public class HomeFragment extends Fragment {
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override public void onRefresh() {
-                fetchData();
+                if(isInternetOn(context)){
+                    fetchData();
+                }
+                else {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
             }
         });
         fabNewIdea.setOnClickListener(new View.OnClickListener() {
@@ -120,9 +166,21 @@ public class HomeFragment extends Fragment {
 
             }
         });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                MainActivity mainActivity = (MainActivity) context;
+                mainActivity.touchListener(1);
+            }
+        });
+
         //3. Other UI related things, including recycler view adapter
-        modelExplorerArrayList = new ArrayList<>();
-        homeAdapter = new HomeAdapter(context, modelExplorerArrayList, homeAdapterClickListener);
+        relativeLayout.setVisibility(View.VISIBLE);
+        ivSearchIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.tool));
+        tvSearchResult.setText("Plant A Seed");
+        serverArrayList = new ArrayList<>();
+        homeAdapter = new HomeAdapter(context,serverArrayList,homeAdapterClickListener);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(homeAdapter);
     }
@@ -130,36 +188,30 @@ public class HomeFragment extends Fragment {
     public void fetchData() {
         //1. Show progress UI (swipe/loader)
         mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context,R.color.lightGreen));
         //2. Prepare listener
         ApiManagerListener apiManagerListener = new ApiManagerListener() {
             @Override public void onSuccess(String response) {
                 try {
                     JSONArray jsonArray = new JSONArray(response);
-                    modelExplorerArrayList.clear();
+                    serverArrayList.clear();
                     for (int i = 0; i < jsonArray.length(); i++) {
                         try {
                             JSONObject resultJSONObject = jsonArray.getJSONObject(i);
-                            modelExplorerArrayList.add(setter(resultJSONObject));
+                            serverArrayList.add(setter(resultJSONObject));
                         }catch (Exception e){
 
                         }
                     }
-                    homeAdapter.notifyDataSetChanged();
-                    if(modelExplorerArrayList.size() ==0){
-                        relativeLayout.setVisibility(View.VISIBLE);
-                        fabNewIdea.setVisibility(View.GONE);
-                    }
-                    else{
-                        relativeLayout.setVisibility(View.GONE);
-                        fabNewIdea.setVisibility(View.VISIBLE);
-                    }
+                    homeAdapter.updateData(serverArrayList);
+                    mSwipeRefreshLayout.setRefreshing(false);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
             @Override public void onError(VolleyError error) {
-
+                mSwipeRefreshLayout.setRefreshing(false);
             }
 
             @Override public void statusCode(int statusCode) {
@@ -174,7 +226,6 @@ public class HomeFragment extends Fragment {
         ApiManager apiManager = new ApiManager(apiManagerListener);
         apiManager.postRequest(context, url, hashMap);
         //5. Dismiss loader/swipe in success as well as error
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void deleteIdea(final ModelExplorer modelExplorer) {
@@ -183,25 +234,17 @@ public class HomeFragment extends Fragment {
 
             @Override public void onSuccess(String response) {
                 int index=-1;
-                for(int i=0;i<=modelExplorerArrayList.size();i++){
-                    if(modelExplorerArrayList.get(i).getUniqueId().equals(modelExplorer.getUniqueId())){
+                for(int i = 0; i<= serverArrayList.size(); i++){
+                    if(serverArrayList.get(i).getUniqueId().equals(modelExplorer.getUniqueId())){
                         index = i;
                         break;
                     }
                 }
                 // 1. Update the array list at position i.e add,insert,remove.
                 if(index>=0){
-                    modelExplorerArrayList.remove(index);
+                    serverArrayList.remove(index);
                     // 2. Notify adapter at position.
                     homeAdapter.notifyItemRemoved(index);
-                }
-                if(modelExplorerArrayList.size() ==0){
-                    relativeLayout.setVisibility(View.VISIBLE);
-                    fabNewIdea.setVisibility(View.GONE);
-                }
-                else{
-                    relativeLayout.setVisibility(View.GONE);
-                    fabNewIdea.setVisibility(View.VISIBLE);
                 }
                 progressDialog.dismiss();
             }
@@ -242,16 +285,15 @@ public class HomeFragment extends Fragment {
         progressDialog.setCancelable(false);
     }
 
-    // For adding new Idea into Adapter
     @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
                 ModelExplorer modelExplorer;
                 if(data !=null){
                     modelExplorer = data.getParcelableExtra("modelExplorerValue");
-                    modelExplorerArrayList.add(modelExplorer);
-                    homeAdapter.notifyItemInserted(modelExplorerArrayList.size());
-                    if(modelExplorerArrayList.size() ==0){
+                    serverArrayList.add(modelExplorer);
+                    homeAdapter.notifyItemInserted(serverArrayList.size());
+                    if(serverArrayList.size() ==0){
                         relativeLayout.setVisibility(View.VISIBLE);
                         fabNewIdea.setVisibility(View.GONE);
                     }
@@ -265,10 +307,10 @@ public class HomeFragment extends Fragment {
             ModelExplorer modelExplorer;
             if(data != null){
                 modelExplorer = data.getParcelableExtra("modelExplorerEditValue");
-                modelExplorerArrayList.set(x,modelExplorer);
+                serverArrayList.set(x,modelExplorer);
                 homeAdapter.notifyItemChanged(x);
 
-                if(modelExplorerArrayList.size() ==0){
+                if(serverArrayList.size() ==0){
                     relativeLayout.setVisibility(View.VISIBLE);
                     fabNewIdea.setVisibility(View.GONE);
                 }
@@ -276,8 +318,38 @@ public class HomeFragment extends Fragment {
                     relativeLayout.setVisibility(View.GONE);
                     fabNewIdea.setVisibility(View.VISIBLE);
                 }
-
             }
         }
+    }
+
+    @Override public void onResume() {
+        super.onResume();
+    }
+
+    @Override public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+    }
+
+    public static boolean isInternetOn(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        // test for connection
+        if (cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            Log.v("log", "Internet is working");
+            // txt_status.setText("Internet is working");
+            return true;
+        } else {
+            Log.v("log", "No internet access");
+            Toast.makeText(context,"No internet access",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+    public void homeFragmentSearch(String query,HashMap<String,String> hashMap){
+        homeAdapter.setFilterHashMap(hashMap);
+        homeAdapter.getFilter().filter(query);
     }
 }

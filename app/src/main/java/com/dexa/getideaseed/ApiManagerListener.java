@@ -8,7 +8,7 @@ import com.android.volley.VolleyError;
 
 public interface ApiManagerListener {
 
-    public void onSuccess(String response);
-    public  void onError(VolleyError error);
-    public  void statusCode(int statusCode);
+    void onSuccess(String response);
+    void onError(VolleyError error);
+    void statusCode(int statusCode);
 }

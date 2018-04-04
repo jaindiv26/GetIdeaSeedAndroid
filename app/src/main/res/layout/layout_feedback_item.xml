@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/lightGrey"
+    android:elevation="8dp"
+    app:cardCornerRadius="8dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginVertical="8dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/commentGrey"
+        >
+
+        <TextView
+            android:id="@+id/tvGuestname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guest Username"
+            android:textSize="16sp"
+            android:textColor="@color/lightGreen"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            />
+
+        <TextView
+            android:id="@+id/tvGuestComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvGuestname"
+            android:text="Guest comment"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            />
+
+        <EditText
+            android:id="@+id/etEditComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvGuestname"
+            android:background="@drawable/bg_rounded_edittext"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:layout_margin="16dp"
+            android:padding="8dp"
+            />
+
+        <Button
+            android:id="@+id/btEditComment"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_button"
+            android:text="Edit"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_gravity="end"
+            />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

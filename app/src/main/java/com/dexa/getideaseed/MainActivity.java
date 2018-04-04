@@ -3,29 +3,21 @@ package com.dexa.getideaseed;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -33,37 +25,37 @@ public class MainActivity extends AppCompatActivity{
     private TextView homeBar,exploreBar;
     private Context context;
     private ViewPager viewPager;
-    private FragmentPagerAdapter adapterViewPager;
-    private ArrayList<ModelExplorer> list = new ArrayList<>();
     private Toolbar mainToolbar;
+    private FrameLayout redCircle;
+    private TextView countTextView;
+    private int filterCount = 0;
+    private MenuItem filterMenuItem,searchItem,menuItemLogOut;
+    private SearchView searchView;
+    private FrameLayout rootView;
+    private SearchView my_search_view;
+    private HashMap<String,String> hashMap = new HashMap<>();
+    private MainActivityPagerAdapter mainActivityPagerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         context=MainActivity.this;
 
         initComponents();
-
         onTabsClicked();
     }
 
     private void onTabsClicked(){
         homeImage.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                homeBar.setVisibility(View.VISIBLE);
-                exploreBar.setVisibility(View.INVISIBLE);
-                exploreImage.setColorFilter(getResources().getColor(R.color.darkGrey));
                 viewPager.setCurrentItem(0);
             }
         });
 
         exploreImage.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                exploreBar.setVisibility(View.VISIBLE);
-                homeBar.setVisibility(View.INVISIBLE);
-                homeImage.setColorFilter(getResources().getColor(R.color.darkGrey));
                 viewPager.setCurrentItem(1);
             }
         });
@@ -86,16 +78,18 @@ public class MainActivity extends AppCompatActivity{
 
                 switch (position){
                     case 0:{
-                        homeBar.setVisibility(View.VISIBLE);
-                        exploreBar.setVisibility(View.INVISIBLE);
-                        exploreImage.setColorFilter(getResources().getColor(R.color.darkGrey));
+                        exploreImage.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.unselected_explore_botton));
+                        homeImage.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.home_botton));
+                        homeBar.setTextColor(ContextCompat.getColor(context,R.color.lightGreen));
+                        exploreBar.setTextColor(ContextCompat.getColor(context,R.color.darkGrey));
                         break;
                     }
 
                     case 1:{
-                        exploreBar.setVisibility(View.VISIBLE);
-                        homeBar.setVisibility(View.INVISIBLE);
-                        homeImage.setColorFilter(getResources().getColor(R.color.darkGrey));
+                        homeImage.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.unselected_home_botton));
+                        exploreImage.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.explore_botton));
+                        homeBar.setTextColor(ContextCompat.getColor(context,R.color.darkGrey));
+                        exploreBar.setTextColor(ContextCompat.getColor(context,R.color.lightGreen));
                         break;
                     }
                 }
@@ -105,93 +99,121 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+
         setSupportActionBar(mainToolbar);
         getSupportActionBar().setIcon(R.drawable.ic_lightbulb_outline_white_24dp);
         getSupportActionBar().setTitle(" Welcome "+ PrefManager.getInstance().getString("username"));
-        exploreBar.setVisibility(View.GONE);
-        exploreImage.setColorFilter(getResources().getColor(R.color.darkGrey));
-
-        adapterViewPager = new MainPagerAdapter(getSupportFragmentManager(),list);
-        viewPager.setAdapter(adapterViewPager);
+        exploreImage.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.unselected_explore_botton));
+        homeImage.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.home_botton));
+        homeBar.setTextColor(ContextCompat.getColor(context,R.color.lightGreen));
+        exploreBar.setTextColor(ContextCompat.getColor(context,R.color.darkGrey));
+        mainActivityPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(mainActivityPagerAdapter);
         viewPager.setCurrentItem(0);
-        volleyImplement();
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main,menu);
+        filterMenuItem = menu.findItem(R.id.activity_main_alerts_menu_item);
+        rootView = (FrameLayout) filterMenuItem.getActionView();
+        redCircle = rootView.findViewById(R.id.view_alert_red_circle);
+        countTextView = rootView.findViewById(R.id.view_alert_count_textview);
+        searchItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override public boolean onQueryTextChange(String newText) {
+                setFilterAndSearch();
+                return false;
+            }
+        });
+        menuItemLogOut = menu.findItem(R.id.menuItemLogOut);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-
             case R.id.menuItemLogOut:{
                 PrefManager.getInstance().setBoolean("loggedIn",false);
                 startActivity(new Intent(context,LoginActivity.class));
                 finish();
                 return true;
             }
+            case R.id.activity_main_alerts_menu_item:{
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("data",hashMap);
+                BottomSheetFragment bottomSheetFragment = BottomSheetFragment.newInstance(bundle);
+                bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+                return true;
+            }
+            case R.id.action_search:{
+                filterMenuItem.setVisible(false);
+                menuItemLogOut.setVisible(false);
+                MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+                    @Override
+                    public boolean onMenuItemActionExpand(MenuItem item) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onMenuItemActionCollapse(MenuItem item) {
+                        filterMenuItem.setVisible(true);
+                        menuItemLogOut.setVisible(true);
+                        return true;
+                    }
+                });
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private void volleyImplement(){
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://www.getideaseed.com/api/ideas/public";
+    private void setFilterAndSearch(){
+        int position = viewPager.getCurrentItem();
+        Fragment fragment = mainActivityPagerAdapter.getActiveFragmentAtPosition(position);
+        if(fragment instanceof HomeFragment) {
+            ((HomeFragment) fragment).homeFragmentSearch(searchView.getQuery().toString(),hashMap);
+        }
+        if(fragment instanceof ExplorerFragment) {
+            ((ExplorerFragment) fragment).explorerFragmentSearch(searchView.getQuery().toString(),hashMap);
+        }
+    }
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        String str = response;
-                        try {
-                            JSONArray jsonArray = new JSONArray(str);
-
-                            for (int i = 0; i < jsonArray.length(); i++){
-                                JSONObject resultJSONObject = jsonArray.getJSONObject(i);
-                                list.add(setter(resultJSONObject));
-                            }
-                            adapterViewPager = new MainPagerAdapter(getSupportFragmentManager(),list);
-                            viewPager.setAdapter(adapterViewPager);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
+    @Override public boolean onPrepareOptionsMenu(Menu menu) {
+        rootView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this,
-                        "That didn't work!", Toast.LENGTH_LONG).show();
+            public void onClick(View v) {
+                onOptionsItemSelected(filterMenuItem);
             }
         });
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        return super.onPrepareOptionsMenu(menu);
     }
 
-    private ModelExplorer setter(JSONObject js) throws JSONException {
-        //Setting value in the modelExplorer from passed JSON Object
-        ModelExplorer modelExplorer = new ModelExplorer();
-        modelExplorer.setUniqueId(js.optString("_id"));
-        modelExplorer.setTitle(js.optString("title"));
-        modelExplorer.setDescription(js.optString("description"));
-        modelExplorer.setUserName(js.optString("userName"));
-        modelExplorer.setUserID(js.optString("userId"));
-        modelExplorer.setPrivate(js.optBoolean("isPrivate"));
-        modelExplorer.setPublic(js.optBoolean("isPublic"));
-            // For getting value from JSON array isLightbulbedBy
-            JSONArray jsonArray = js.getJSONArray("isLightbulbedBy");
-            ArrayList<String> isLightBulbByArrayList = new ArrayList<>();
-
-            for (int i = 0; i < jsonArray.length(); i++){
-                String arrayElement = jsonArray.getString(i);
-                isLightBulbByArrayList.add(arrayElement);    //Setting value at index i into isLightBulbByArrayList
-            }
-        modelExplorer.setIsLightbulbedBy(isLightBulbByArrayList);
-        modelExplorer.setLightbulbs(js.optInt("lightbulbs"));
-        modelExplorer.setProgress(js.optInt("progress"));
-        modelExplorer.setDifficulty(js.optInt("difficulty"));
-        modelExplorer.setOrginality(js.optInt("originality"));
-        return modelExplorer;
+    public void sendData(HashMap<String,String> hashMap,int i){
+        filterCount = i;
+        this.hashMap = hashMap;
+        if(filterCount >0){
+            countTextView.setText(String.valueOf(filterCount));
+            redCircle.setVisibility(View.VISIBLE);
+        }
+        else if(filterCount == 0){
+            redCircle.setVisibility(View.INVISIBLE);
+            countTextView.setText(String.valueOf(0));
+        }
+        setFilterAndSearch();
     }
+
+    public Boolean touchListener(int flag){
+        if(flag==1){
+            searchView.clearFocus();
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 }

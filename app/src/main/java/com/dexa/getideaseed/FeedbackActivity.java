@@ -1,11 +1,14 @@
 package com.dexa.getideaseed;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,17 +32,22 @@ import java.util.HashMap;
 public class FeedbackActivity extends AppCompatActivity {
 
     private TextView tvIdeaUsername,tvIdeaTitle,tvIdeaDescription,tvNoOfBulbs,tvGuestUsername;
-    private EditText tvGuestComment;
+    private EditText etGuestComment;
     private Button btSubmit;
     private ProgressBar pbOriginality,pbDifficulty;
     private Context context;
     private RecyclerView recyclerView;
     private String uniqueID;
     private LinearLayoutManager linearLayoutManager;
-    private FeedbackAdapter FeedbackAdapter;
+    private FeedbackAdapter feedbackAdapter;
     private ModelExplorer modelExplorer;
     private ApiManagerListener apiManagerListener;
     private ArrayList<ModelFeedback> modelFeedbackArrayList = new ArrayList<>();
+    private ClickListener clickListener;
+    private ProgressDialog progressDialog;
+    private Toolbar mToolbar;
+
+
 
 
     @Override public void onCreate(Bundle savedInstanceState) {
@@ -70,12 +78,13 @@ public class FeedbackActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.rvFeddbackComments);
         recyclerView.setNestedScrollingEnabled(false);
         tvGuestUsername = findViewById(R.id.tvGuestUsername);
-        tvGuestComment = findViewById(R.id.etGuestComment);
+        etGuestComment = findViewById(R.id.etGuestComment);
         btSubmit = findViewById(R.id.btSubmitButton);
+        mToolbar =findViewById(R.id.feedbackToolbar);
 
         btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                if(TextUtils.isEmpty(tvGuestComment.getText().toString())){
+                if(TextUtils.isEmpty(etGuestComment.getText().toString())){
                     Toast.makeText(context,"Write some feedback",
                             Toast.LENGTH_LONG).show();
                 }
@@ -85,8 +94,8 @@ public class FeedbackActivity extends AppCompatActivity {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 modelFeedbackArrayList.add(modelFeedbackGuestUser(jsonObject));
-                                FeedbackAdapter.notifyItemInserted(modelFeedbackArrayList.size()-1);
-                                tvGuestComment.setText("");
+                                feedbackAdapter.notifyItemInserted(modelFeedbackArrayList.size()-1);
+                                etGuestComment.setText("");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -102,7 +111,7 @@ public class FeedbackActivity extends AppCompatActivity {
                     };
                     String url = "https://www.getideaseed.com/api/idea/feedback";
                     HashMap<String,String> hashMap = new HashMap<>();
-                        hashMap.put("message",tvGuestComment.getText().toString());
+                        hashMap.put("message", etGuestComment.getText().toString());
                         hashMap.put("from",tvGuestUsername.getText().toString());
                         hashMap.put("fromUserId",PrefManager.getInstance().getString("userID"));
                         hashMap.put("ideaId",uniqueID);
@@ -111,6 +120,39 @@ public class FeedbackActivity extends AppCompatActivity {
                 }
             }
         });
+        clickListener = new ClickListener() {
+            @Override public void onClick(ModelExplorer modelExplorer) {
+            }
+
+            @Override public void onClick(ModelFeedback modelFeedback,String comment) {
+                if(modelFeedback.getMessage().equals(comment)){
+                    for(int i=0;i<modelFeedbackArrayList.size();i++){
+                        if(modelFeedback.getFeedbackId().equals(modelFeedbackArrayList.get(i).getFeedbackId())){
+                            feedbackAdapter.notifyItemChanged(i,modelFeedback);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    editComment(modelFeedback,comment);
+                }
+            }
+
+            @Override public void onResultFound(boolean result) {
+
+            }
+
+            @Override public void onLightBulbClicked(ModelExplorer modelExplorer, int numberOfBulbs) {
+
+            }
+        };
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
+        linearLayoutManager = new LinearLayoutManager(context);
+        feedbackAdapter = new FeedbackAdapter(context, modelFeedbackArrayList,clickListener);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(feedbackAdapter);
     }
 
     private void fetchData(){
@@ -127,9 +169,9 @@ public class FeedbackActivity extends AppCompatActivity {
                     }
 
                     linearLayoutManager = new LinearLayoutManager(context);
-                    FeedbackAdapter = new FeedbackAdapter(context, modelFeedbackArrayList);
+                    feedbackAdapter = new FeedbackAdapter(context, modelFeedbackArrayList,clickListener);
                     recyclerView.setLayoutManager(linearLayoutManager);
-                    recyclerView.setAdapter(FeedbackAdapter);
+                    recyclerView.setAdapter(feedbackAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -147,7 +189,7 @@ public class FeedbackActivity extends AppCompatActivity {
         apiManager.getRequest(context,url);
     }
 
-    private ModelFeedback modelFeedbackGuestUser (JSONObject js) throws JSONException{
+    private ModelFeedback modelFeedbackGuestUser (JSONObject js) {
         ModelFeedback modelFeedback = new ModelFeedback();
         modelFeedback.setFeedbackId(js.optString("_id"));
         modelFeedback.setUserId(js.optString("ideaId"));
@@ -156,4 +198,53 @@ public class FeedbackActivity extends AppCompatActivity {
         modelFeedback.setFromUserId(js.optString("fromUserId"));
         return modelFeedback;
     }
+
+    public void editComment(final ModelFeedback modelFeedback, final String comment){
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Loading..."); // Setting Message
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialog.show(); // Display Progress Dialog
+        progressDialog.setCancelable(false);
+        apiManagerListener = new ApiManagerListener() {
+            @Override public void onSuccess(String response) {
+                progressDialog.dismiss();
+                modelFeedback.setMessage(comment);
+                for(int i=0;i<modelFeedbackArrayList.size();i++){
+                    if(modelFeedback.getFeedbackId().equals(modelFeedbackArrayList.get(i).getFeedbackId())){
+                        feedbackAdapter.notifyItemChanged(i,modelFeedback);
+                        break;
+                    }
+                }
+                Toast.makeText(context,"Comment Edited",
+                        Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override public void onError(VolleyError error) {
+                progressDialog.dismiss();
+            }
+
+            @Override public void statusCode(int statusCode) {
+                int x=5;
+            }
+        };
+
+        HashMap<String,String> hashMap = new HashMap<>();
+        hashMap.put("message",comment);
+        String url = "https://www.getideaseed.com/api/idea/feedback/"+modelFeedback.getFeedbackId();
+
+        ApiManager apiManager = new ApiManager(apiManagerListener);
+        apiManager.putRequest(context,url,hashMap);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

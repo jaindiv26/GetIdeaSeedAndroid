@@ -1,29 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:orientation="vertical"
     >
 
     <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat"
         app:titleTextColor="@color/white"
         app:title="What's your idea?"
+        android:elevation="2dp"
         />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
+            android:layout_height="wrap_content"
             android:background="@color/lightGrey"
             >
 
@@ -33,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:text="Title"
                 android:textSize="16dp"
-                android:textColor="@color/black"
+                android:textColor="@color/darkGrey"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -45,12 +51,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tvTitle"
                 android:background="@drawable/bg_rounded_edittext"
-                android:hint="Title"
                 android:textSize="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:padding="8dp"
+                android:singleLine="true"
+                android:maxLines="1"
                 />
 
             <TextView
@@ -59,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/etTitle"
                 android:text="Description"
-                android:textColor="@color/black"
+                android:textColor="@color/darkGrey"
                 android:textSize="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
@@ -72,7 +79,6 @@
                 android:layout_height="150dp"
                 android:layout_below="@id/tvDescription"
                 android:background="@drawable/bg_rounded_edittext"
-                android:hint="Description"
                 android:textSize="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
@@ -91,11 +97,10 @@
                 android:layout_marginTop="16dp"
                 >
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical"
                     >
 
                     <TextView
@@ -106,27 +111,41 @@
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
                         android:text="Difficulty"
-                        android:textColor="@color/black"
+                        android:textColor="@color/darkGrey"
                         android:textSize="16dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tvDifficultyProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="14dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="2dp"
                         />
 
                     <SeekBar
                         android:id="@+id/sbDifficulty"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_below="@id/tvDifficulty"
                         android:layout_marginTop="16dp"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="2dp"
                         android:thumb="@drawable/bg_custom_thumb"
+                        android:min="0"
+                        android:max="10"
                         />
 
-                </LinearLayout>
+                </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical"
                     >
 
                     <TextView
@@ -134,24 +153,40 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Originality"
-                        android:textColor="@color/black"
+                        android:textColor="@color/darkGrey"
                         android:textSize="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
                         />
 
+                    <TextView
+                        android:id="@+id/tvOriginalityProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="14dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="2dp"
+                        />
+
                     <SeekBar
                         android:id="@+id/sbOriginality"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_below="@id/tvOriginality"
                         android:layout_marginTop="16dp"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginRight="16dp"
                         android:thumb="@drawable/bg_custom_thumb"
+                        android:min="0"
+                        android:max="10"
                         />
 
-                </LinearLayout>
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -163,6 +198,8 @@
                 android:orientation="horizontal"
                 android:weightSum="1"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
                 >
 
                 <LinearLayout
@@ -175,32 +212,43 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="How's it going?"
-                        android:textColor="@color/black"
-                        android:textSize="16dp"
-                        android:layout_marginTop="16dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:text="How's it going?"
+                        android:textColor="@color/darkGrey"
+                        android:textSize="16dp"
                         />
 
-                    <Spinner
-                        android:id="@+id/spStatus"
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:prompt="@string/prompt"
-                        android:background="@color/white"
-                        android:popupBackground="@color/white"
-                        android:backgroundTint="@color/white"
-                        android:spinnerMode="dropdown"
-                        android:layout_marginTop="16dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingBottom="8dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="64dp"
+                        android:background="@color/white"
                         >
 
-                    </Spinner>
+                        <Spinner
+                            android:id="@+id/spStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:prompt="@string/prompt"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="8dp"
+                            />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_arrow_drop_down_black_24dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -208,6 +256,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.50"
+                    android:layout_marginLeft="16dp"
                     android:orientation="vertical"
                     >
 
@@ -215,7 +264,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Visibility"
-                        android:textColor="@color/black"
+                        android:textColor="@color/darkGrey"
                         android:textSize="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginLeft="16dp"
@@ -227,7 +276,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:button="@drawable/bg_checkbox"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="18dp"
+                        android:text="  Private"
+                        android:textColor="@color/black"
                         android:layout_marginStart="16dp"
                         android:layout_marginEnd="16dp"
                         />
@@ -241,11 +292,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_button"
+                android:layout_below="@id/llCurrentState"
                 android:text="Save"
                 android:textSize="14dp"
                 android:textColor="@color/white"
                 android:textAllCaps="false"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
@@ -256,6 +307,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_cancel_button"
+                android:layout_below="@id/llCurrentState"
                 android:layout_toLeftOf="@id/btSave"
                 android:text="Cancel"
                 android:textSize="14dp"
@@ -263,9 +315,11 @@
                 android:textAllCaps="false"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
-                android:layout_alignParentBottom="true"
                 />
 
         </RelativeLayout>
 
-</RelativeLayout>
+
+    </ScrollView>
+
+</LinearLayout>

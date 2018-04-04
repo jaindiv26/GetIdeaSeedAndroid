@@ -7,26 +7,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Dev on 03/03/18.
  */
 
-public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHolder>  {
+public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHolder> implements Filterable {
 
     private Context context;
-    private ArrayList<ModelExplorer> modelExplorerArrayList;
+    private ArrayList<ModelExplorer> originalArrayList;
     private HomeAdapterClickListener homeAdapterClickListener;
+    private ArrayList<ModelExplorer> filteredArrayList = new ArrayList<>();
+    private HashMap<String,String> hashMap = new HashMap<>();
 
     public HomeAdapter(Context context, ArrayList<ModelExplorer> arrayList, HomeAdapterClickListener homeAdapterClickListener) {
         this.context = context;
-        modelExplorerArrayList = arrayList;
+        originalArrayList = arrayList;
         this.homeAdapterClickListener =homeAdapterClickListener;
+        filteredArrayList = arrayList;
+    }
+
+    public void updateData(List<ModelExplorer> updatedList){
+        filteredArrayList.clear();
+        filteredArrayList.addAll(updatedList);
+        notifyDataSetChanged();
     }
 
     @Override public NumberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -37,7 +50,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
 
     @Override public void onBindViewHolder(NumberViewHolder holder, final int position) {
         final ModelExplorer modelExplorer;
-        modelExplorer = modelExplorerArrayList.get(position);
+        modelExplorer = filteredArrayList.get(position);
         holder.tvUserProjectName.setText(modelExplorer.getTitle());
         holder.tvUserProjectDescription.setText(modelExplorer.getDescription());
         holder.pbUserProjectOriginality.setProgress(modelExplorer.getOrginality());
@@ -76,10 +89,113 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
         }
 
         holder.cbUserProjectVisibility.setClickable(false);
+
+        if(modelExplorer.getPrivate()){
+            holder.cbUserProjectVisibility.setChecked(false);
+            holder.cbUserProjectVisibility.setText("  Private");
+        }
+        else {
+            holder.cbUserProjectVisibility.setChecked(true);
+            holder.cbUserProjectVisibility.setText("  Public");
+
+        }
     }
 
     @Override public int getItemCount() {
-        return modelExplorerArrayList.size();
+        if(filteredArrayList != null){
+            if(filteredArrayList.size() == 0){
+                return  0;
+            }
+            else
+                return filteredArrayList.size();
+        }
+        else
+            return 0;
+    }
+
+    @Override public Filter getFilter() {
+        return new Filter() {
+            @Override protected FilterResults performFiltering(CharSequence constraint) {
+                String charString = constraint.toString();
+                charString = charString.trim();
+                ArrayList<ModelExplorer> filteredList = new ArrayList<>();
+                int difficultyCount=0,originalityCount=0,progressCount=0,lightBulbCount=0;
+
+                difficultyCount=0;
+                originalityCount=0;
+                progressCount=0;
+                lightBulbCount=0;
+
+                if(hashMap==null){
+                    difficultyCount=0;
+                    originalityCount=0;
+                    progressCount=0;
+                    lightBulbCount=0;
+                }
+                if(hashMap.containsKey("difficulty")){
+                    difficultyCount = Integer.parseInt(hashMap.get("difficulty"));
+                }
+                if(hashMap.containsKey("originality")){
+                    originalityCount = Integer.parseInt(hashMap.get("originality"));
+                }
+                if(hashMap.containsKey("progress")){
+                    progressCount = Integer.parseInt(hashMap.get("progress"));
+                }
+                if(hashMap.containsKey("lightBulbs")){
+                    lightBulbCount = Integer.parseInt(hashMap.get("lightBulbs"));
+                }
+
+
+                if(charString.length()>2) {
+                    for (ModelExplorer modelExplorer : originalArrayList) {
+                        if (modelExplorer.getTitle().toLowerCase().contains(charString)) {
+                            filteredList.add(modelExplorer);
+                        }
+                    }
+                    if(filteredList.size()==0){
+                        if(homeAdapterClickListener != null){
+                            homeAdapterClickListener.onNoResultFound(true);
+                        }
+                    }
+                }
+                else{
+                    if(difficultyCount ==0 && originalityCount ==0 && progressCount ==0 && lightBulbCount==0){
+                        filteredList.addAll(originalArrayList);
+                    }
+                    else {
+                        for (int i = 0; i< originalArrayList.size(); i++){
+                            ModelExplorer modelExplorer = originalArrayList.get(i);
+                            if(modelExplorer.getDifficulty()>=difficultyCount && modelExplorer.getProgress()>=progressCount && modelExplorer.getOrginality()>=originalityCount && modelExplorer.getLightbulbs()>=lightBulbCount){
+                                filteredList.add(modelExplorer);
+                            }
+                        }
+                    }
+                    if(filteredList.size()>0){
+                        if(homeAdapterClickListener != null){
+                            homeAdapterClickListener.onNoResultFound(false);
+                        }
+                    }
+                    else if(filteredList.size()==0){
+                        if(homeAdapterClickListener != null){
+                            homeAdapterClickListener.onNoResultFound(true);
+                        }
+                    }
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = filteredList;
+                return filterResults;
+            }
+
+            @Override protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredArrayList.clear();
+                if(results.values == null){
+                    updateData(new ArrayList<ModelExplorer>());
+                }
+                else{
+                    updateData((List<ModelExplorer>) results.values);
+                }
+            }
+        };
     }
 
     public class NumberViewHolder extends RecyclerView.ViewHolder {
@@ -100,5 +216,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
             btUserProjectDelete = itemView.findViewById(R.id.btUserProjectDelete);
             ivIdeaProgress = itemView.findViewById(R.id.ivIdeaProgress);
         }
+    }
+
+    public void setFilterHashMap(HashMap<String,String> hashMap){
+        this.hashMap = hashMap;
     }
 }

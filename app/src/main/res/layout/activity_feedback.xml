@@ -1,230 +1,263 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/feedbackToolbar"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:theme="@style/MainActivityTheme"
+        app:popupTheme="@style/ThemeOverlay.AppCompat"
+        app:titleTextColor="@color/white"
+        android:elevation="8dp"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/feedbackToolbar"
+        >
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cvUserIdeaDetail"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
-            app:cardElevation="8dp"
-            app:cardCornerRadius="8dp"
-            >
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                >
 
-                <TextView
-                    android:id="@+id/tvFeedbackUseName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="UserName"
-                    android:textSize="20dp"
-                    android:textColor="@color/lightGreen"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="16dp"
-                    />
-
-                <TextView
-                    android:id="@+id/tvFeedbackProjectTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tvFeedbackUseName"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/poppins"
-                    android:text="Project Title"
-                    android:textColor="@color/black"
-                    android:textSize="32dp"
-                    android:textStyle="italic"
-                    />
-
-                <TextView
-                    android:id="@+id/tvFeedbackProjectDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tvFeedbackProjectTitle"
-                    android:text="Project Description"
-                    android:textSize="20dp"
-                    android:textStyle="italic"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    />
-
-                <TextView
-                    android:id="@+id/tvFeedbackOriginality"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tvFeedbackProjectDescription"
-                    android:text="Originality"
-                    android:textSize="16dp"
-                    android:textColor="@color/lightBlack"
-                    android:textStyle="italic"
-                    android:fontFamily="@font/poppins"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="16dp"
-                    />
-
-                <ProgressBar
-                    android:id="@+id/pbFeedbackOriginality"
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cvUserIdeaDetail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/tvFeedbackOriginality"
                     android:layout_marginTop="16dp"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:min="0"
-                    android:max="10"
-                    style="@style/OriginalityProgressBar"
-                    />
-
-                <TextView
-                    android:id="@+id/tvFeedbackDifficulty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/pbFeedbackOriginality"
-                    android:text="Difficulty"
-                    android:textSize="16dp"
-                    android:textColor="@color/lightBlack"
-                    android:textStyle="italic"
-                    android:fontFamily="@font/poppins"
-                    android:layout_marginTop="16dp"
                     android:layout_marginLeft="16dp"
-                    />
-
-                <ProgressBar
-                    android:id="@+id/pbFeedbackDifficulty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tvFeedbackDifficulty"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="16dp"
-                    android:min="0"
-                    android:max="10"
-                    style="@style/DifficultyProgressBar"
-                    />
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/pbFeedbackDifficulty"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_alignParentRight="true"
+                    app:cardElevation="8dp"
+                    app:cardCornerRadius="8dp"
                     >
 
-                    <ImageView
-                        android:id="@+id/ivBulb"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/like_bulb_no_like"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_alignParentRight="true"
-                        />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/tvFeedbackNoOfBulb"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_below="@id/ivBulb"
-                        android:text="4"
-                        android:gravity="center"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginBottom="16dp"
-                        android:layout_alignParentRight="true"
-                        />
+                        <TextView
+                            android:id="@+id/tvFeedbackUseName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="UserName"
+                            android:textSize="20dp"
+                            android:textColor="@color/lightGreen"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            />
 
-                </RelativeLayout>
+                        <TextView
+                            android:id="@+id/tvFeedbackProjectTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvFeedbackUseName"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/poppins"
+                            android:text="Project Title"
+                            android:textColor="@color/black"
+                            android:textSize="32dp"
+                            android:textStyle="italic"
+                            />
 
-            </RelativeLayout>
+                        <TextView
+                            android:id="@+id/tvFeedbackProjectDescription"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvFeedbackProjectTitle"
+                            android:text="Project Description"
+                            android:textSize="20dp"
+                            android:textStyle="italic"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            />
 
-        </android.support.v7.widget.CardView>
+                        <TextView
+                            android:id="@+id/tvFeedbackOriginality"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvFeedbackProjectDescription"
+                            android:text="Originality"
+                            android:textSize="16dp"
+                            android:textColor="@color/lightBlack"
+                            android:textStyle="italic"
+                            android:fontFamily="@font/poppins"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvFeddbackComments"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/cvUserIdeaDetail"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
-            >
-        </android.support.v7.widget.RecyclerView>
+                        <ProgressBar
+                            android:id="@+id/pbFeedbackOriginality"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvFeedbackOriginality"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:min="0"
+                            android:max="10"
+                            style="@style/OriginalityProgressBar"
+                            />
 
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/rvFeddbackComments"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
-            app:cardElevation="8dp"
-            app:cardCornerRadius="8dp"
-            android:background="@color/lightGrey"
-            >
+                        <TextView
+                            android:id="@+id/tvFeedbackDifficulty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/pbFeedbackOriginality"
+                            android:text="Difficulty"
+                            android:textSize="16dp"
+                            android:textColor="@color/lightBlack"
+                            android:textStyle="italic"
+                            android:fontFamily="@font/poppins"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                        <ProgressBar
+                            android:id="@+id/pbFeedbackDifficulty"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvFeedbackDifficulty"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginTop="16dp"
+                            android:min="0"
+                            android:max="10"
+                            style="@style/DifficultyProgressBar"
+                            />
 
-                <TextView
-                    android:id="@+id/tvGuestUsername"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Username"
-                    android:textSize="16dp"
-                    android:textColor="@color/lightGreen"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="16dp"
-                    />
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/pbFeedbackDifficulty"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_alignParentRight="true"
+                            >
 
-                <EditText
-                    android:id="@+id/etGuestComment"
+                            <ImageView
+                                android:id="@+id/ivLightBulb"
+                                android:layout_width="48dp"
+                                android:layout_height="40dp"
+                                android:background="@drawable/like_bulb_no_like"
+                                android:layout_marginTop="16dp"
+                                android:layout_alignParentRight="true"
+                                />
+
+                            <TextView
+                                android:id="@+id/tvFeedbackNoOfBulb"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/ivLightBulb"
+                                android:text="4"
+                                android:gravity="center"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="16dp"
+                                android:layout_alignParentRight="true"
+                                />
+
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rvFeddbackComments"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:background="@drawable/bg_rounded_edittext"
-                    android:layout_below="@id/tvGuestUsername"
-                    android:hint="Write some feedback"
-                    android:gravity="start"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    />
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cvUserIdeaDetail"
+                    android:clipToPadding="false"
+                    android:clipChildren="false"
+                    android:paddingVertical="8dp"
+                    >
+                </android.support.v7.widget.RecyclerView>
 
-                <Button
-                    android:id="@+id/btSubmitButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_button"
-                    android:layout_below="@id/etGuestComment"
-                    android:text="Submit"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginTop="16dp"
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/rvFeddbackComments"
                     android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
                     android:layout_marginBottom="16dp"
-                    android:textAllCaps="false"
-                    />
+                    app:cardElevation="8dp"
+                    app:cardCornerRadius="8dp"
+                    >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/lightGrey"
+                        >
+
+                        <TextView
+                            android:id="@+id/tvGuestUsername"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Username"
+                            android:textSize="16dp"
+                            android:textColor="@color/lightGreen"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            />
+
+                        <EditText
+                            android:id="@+id/etGuestComment"
+                            android:layout_width="match_parent"
+                            android:layout_height="80dp"
+                            android:background="@drawable/bg_rounded_edittext"
+                            android:layout_below="@id/tvGuestUsername"
+                            android:hint="Write some feedback"
+                            android:textColorHint="@color/darkGrey"
+                            android:textSize="16dp"
+                            android:padding="8dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:gravity="top"
+                            />
+
+                        <Button
+                            android:id="@+id/btSubmitButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_button"
+                            android:layout_below="@id/etGuestComment"
+                            android:text="Submit"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:textAllCaps="false"
+                            />
+
+                    </RelativeLayout>
+
+                </android.support.v7.widget.CardView>
 
             </RelativeLayout>
 
-        </android.support.v7.widget.CardView>
+        </ScrollView>
 
     </RelativeLayout>
 
-</ScrollView>
+</RelativeLayout>

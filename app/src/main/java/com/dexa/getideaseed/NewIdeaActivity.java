@@ -15,9 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -37,12 +39,12 @@ import java.util.List;
 
 public class NewIdeaActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
+    private TextView difficultyProgress,originalityProgress;
     private EditText projectTitle,projectDescription;
     private SeekBar projectDifficulty,projectOrginality;
     private Button projectCancel,projectSave;
     private CheckBox projectVisibility;
     private Context context;
-    private String[] Projectstatus = { "Not Yet Started","In Progress","Done!"};
     private Spinner spinner;
     private ProgressDialog progressDialog;
     private ApiManagerListener apiManagerListener;
@@ -57,7 +59,32 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
         context = NewIdeaActivity.this;
 
         initComponents();
+        projectDifficulty.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                difficultyProgress.setText(String.valueOf(progress));
+            }
 
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        projectOrginality.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                originalityProgress.setText(String.valueOf(progress));
+            }
+
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     public void initComponents(){
@@ -70,27 +97,45 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
         projectSave = findViewById(R.id.btSave);
         spinner = findViewById(R.id.spStatus);
         mToolbar =  findViewById(R.id.toolbar);
+        difficultyProgress = findViewById(R.id.tvDifficultyProgress);
+        originalityProgress = findViewById(R.id.tvOriginalityProgress);
 
         if(getIntent().getParcelableExtra("editUserData") != null){
             modelExplorer = getIntent().getParcelableExtra("editUserData");
             projectDescription.setText(modelExplorer.getDescription());
             projectDifficulty.setProgress(modelExplorer.getProgress());
+            difficultyProgress.setText(String.valueOf(modelExplorer.getProgress()));
             if(modelExplorer.getPrivate()){
                 projectVisibility.setChecked(false);
+                projectVisibility.setText("  Private");
             }
             else {
                 projectVisibility.setChecked(true);
+                projectVisibility.setText("  Public");
             }
             projectOrginality.setProgress(modelExplorer.getOrginality());
+            projectSave.setText("Update");
+            originalityProgress.setText(String.valueOf(modelExplorer.getOrginality()));
             spinner.setSelection(modelExplorer.getProgress());
             projectTitle.setText(modelExplorer.getTitle());
             ideaId = modelExplorer.getUniqueId();
         }
 
+        projectVisibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    projectVisibility.setText("  Public");
+                }
+                else {
+                    projectVisibility.setText("  Private");
+                }
+            }
+        });
+
         projectSave.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if(TextUtils.isEmpty(projectTitle.getText().toString())){
-                    Toast.makeText(context,"Please enter Title",
+                    Toast.makeText(context,"Please enter title",
                             Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -121,7 +166,6 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
         });
 
         spinner.setOnItemSelectedListener(this);
-        projectVisibility.setChecked(false);
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
             getSupportActionBar().setTitle("What's your idea?");

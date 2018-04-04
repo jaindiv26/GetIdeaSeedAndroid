@@ -7,4 +7,7 @@ package com.dexa.getideaseed;
 public interface ClickListener {
 
     void onClick(ModelExplorer modelExplorer);
+    void onClick(ModelFeedback modelFeedback, String comment);
+    void onResultFound(boolean result);
+    void onLightBulbClicked(ModelExplorer modelExplorer, int numberOfBulbs);
 }

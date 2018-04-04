@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
-
-
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/srExplorer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightGrey">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvExplorer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        />
 
-</FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

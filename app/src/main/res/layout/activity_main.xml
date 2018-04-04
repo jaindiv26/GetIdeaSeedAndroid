@@ -1,101 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dexa.getideaseed.MainActivity"
-    android:background="@color/lightGrey"
+    android:fitsSystemWindows="true"
     >
 
-    <android.support.v7.widget.Toolbar
+    <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/maintoolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        app:theme="@style/ThemeOverlay.AppCompat"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleTextColor="@color/white"
-        />
-
-    <android.support.v4.view.ViewPager
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/pager"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/cvSeed"
-        android:layout_below="@id/maintoolbar"
-        />
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cvSeed"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_alignParentBottom="true"
-        app:cardBackgroundColor="@color/lightGrey"
-        app:cardElevation="9dp"
+        tools:context="com.dexa.getideaseed.MainActivity"
+        android:background="@color/lightGrey"
+        android:animateLayoutChanges="true"
         >
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/maintoolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:theme="@style/MainActivityTheme"
+            app:popupTheme="@style/ThemeOverlay.AppCompat"
+            app:titleTextColor="@color/white"
+            android:elevation="2dp"
+            />
+
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/cvSeed"
+            android:layout_below="@id/maintoolbar"
+            />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cvSeed"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_alignParentBottom="true"
+            app:cardBackgroundColor="@color/lightGrey"
+            app:cardElevation="8dp"
             >
 
-            <ImageView
-                android:id="@+id/ivHome"
-                android:layout_width="36dp"
-                android:layout_height="33dp"
-                android:background="@drawable/home_botton"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="92dp"
-                android:layout_marginTop="6dp"
-                android:scaleType="fitCenter"
-                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/lightGrey"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                >
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@color/lightGrey"
+                    >
 
-            <TextView
-                android:id="@+id/tvHomeHighlight"
-                android:layout_width="36dp"
-                android:layout_height="3dp"
-                android:layout_below="@id/ivHome"
-                android:background="@color/lightGreen"
-                android:layout_marginTop="2dp"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="92dp"
-                android:layout_marginBottom="8dp"
-                />
+                    <ImageView
+                        android:id="@+id/ivHome"
+                        android:layout_width="36dp"
+                        android:layout_height="33dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        />
 
-            <ImageView
-                android:id="@+id/ivExplore"
-                android:layout_width="36dp"
-                android:layout_height="33dp"
-                android:background="@drawable/explore_botton"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="97dp"
-                android:layout_marginTop="6dp"
-                />
+                    <TextView
+                        android:id="@+id/tvHomeHighlight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Home"
+                        android:textColor="@color/black"
+                        android:textSize="10dp"
+                        android:layout_gravity="center"
+                        />
 
-            <TextView
-                android:id="@+id/tvExploreHighlight"
-                android:layout_width="44dp"
-                android:layout_height="3dp"
-                android:layout_below="@id/ivExplore"
-                android:background="@color/lightGreen"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="2dp"
-                android:layout_marginRight="92dp"
-                android:layout_marginBottom="8dp"
-                />
+                </LinearLayout>
 
-        </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@color/lightGrey"
+                    >
 
-    </android.support.v7.widget.CardView>
+                    <ImageView
+                        android:id="@+id/ivExplore"
+                        android:layout_width="36dp"
+                        android:layout_height="33dp"
+                        android:layout_gravity="center"
+                        android:scaleType="fitCenter"
+                        android:layout_marginTop="4dp"
+                        />
 
-</RelativeLayout>
+                    <TextView
+                        android:id="@+id/tvExploreHighlight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Explorer"
+                        android:textColor="@color/black"
+                        android:textSize="10dp"
+                        android:layout_gravity="center"
+                        />
 
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

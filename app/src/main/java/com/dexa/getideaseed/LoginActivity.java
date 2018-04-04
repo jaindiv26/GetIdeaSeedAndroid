@@ -9,8 +9,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,6 +23,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.VolleyError;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,10 +55,13 @@ public class LoginActivity extends AppCompatActivity {
         Glide.with(context)
                 .load(R.drawable.animated_logo2)
                 .asGif()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(imageView);
 
         if (PrefManager.getInstance().getBoolean("loggedIn")) {
             startActivity(new Intent(LoginActivity.this,MainActivity.class));
+            finish();
         }
     }
 
@@ -77,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-
                 if(FLAG == 0){
                     if(TextUtils.isEmpty(userName.getText().toString())){
                         Toast.makeText(context,"Please enter Username",
@@ -126,7 +131,61 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
 
+            }
+        });
 
+        password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if(FLAG == 0){
+                        if(TextUtils.isEmpty(userName.getText().toString())){
+                            Toast.makeText(context,"Please enter Username",
+                                    Toast.LENGTH_LONG).show();
+                            return false;
+                        }
+                        if(TextUtils.isEmpty(password.getText().toString())){
+                            Toast.makeText(context,"Please enter password",
+                                    Toast.LENGTH_LONG).show();
+                            return false;
+                        }
+                        if(isInternetOn(context)){
+                            fetchData();
+                        }
+                        else{
+                            Toast.makeText(context,
+                                    "No Internet Connection", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    else if(FLAG == 1){
+                        if(TextUtils.isEmpty(userName.getText().toString())){
+                            Toast.makeText(context,"Please enter Username",
+                                    Toast.LENGTH_LONG).show();
+                            return false;
+                        }
+                        if(TextUtils.isEmpty(email.getText().toString())){
+                            Toast.makeText(context,"Please enter Email-Id",
+                                    Toast.LENGTH_LONG).show();
+                            return false;
+                        }
+
+                        if(TextUtils.isEmpty(password.getText().toString())){
+                            Toast.makeText(context,"Please enter password",
+                                    Toast.LENGTH_LONG).show();
+                            return false;
+                        }
+
+                        if(isInternetOn(context)){
+                            signUpfetchData();
+                        }
+
+                        else{
+                            Toast.makeText(context,
+                                    "No Internet Connection", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+                return false;
             }
         });
 
@@ -158,7 +217,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private ModelUser modelUser (JSONObject js) throws JSONException{
+    private ModelUser modelUser (JSONObject js) {
         ModelUser modelUser = new ModelUser();
         modelUser.setUserId(js.optString("_id"));
         modelUser.setUserSalt(js.optString("salt"));
@@ -221,7 +280,6 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this,
                             "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();
                 }
-
             }
         };
         String url = "https://www.getideaseed.com/api/login";
@@ -247,7 +305,6 @@ public class LoginActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                     //startActivity(new Intent(context,MainActivity.class));
                     Intent intent = new Intent(context, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     startActivity(intent);
                     PrefManager.getInstance().setBoolean("loggedIn",true);
                     PrefManager.getInstance().setString("username",userName.getText().toString());
@@ -304,7 +361,6 @@ public class LoginActivity extends AppCompatActivity {
             apiManager.postRequest(context,url,hashMap);
         }
         catch (Exception e){
-
         }
     }
 
@@ -318,9 +374,26 @@ public class LoginActivity extends AppCompatActivity {
                 tvLogin.setText("Log In");
                 loginButton.setText("Login In");
                 mToolbar.setVisibility(View.INVISIBLE);
+                FLAG=0;
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override public void onBackPressed() {
+        if(FLAG == 1){
+            email.setVisibility(View.GONE);
+            loginButton.setVisibility(View.VISIBLE);
+            signUpButton.setVisibility(View.VISIBLE);
+            tvLogin.setText("Log In");
+            loginButton.setText("Login In");
+            mToolbar.setVisibility(View.INVISIBLE);
+            FLAG=0;
+        }
+
+        else {
+            super.onBackPressed();
+        }
+
+    }
 }

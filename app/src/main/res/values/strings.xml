@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">GetIdeaSeed</string>
     <string name="prompt">Not Yet Started</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="originality">Originality</string>
+    <string name="progress">Progress</string>
+    <string name="lightBulbs">LightBulbs</string>
 </resources>

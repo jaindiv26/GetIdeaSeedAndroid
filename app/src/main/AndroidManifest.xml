@@ -14,7 +14,11 @@
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme"
         android:name=".GetIdeaSeedApplication">
-        <activity android:name=".MainActivity"> </activity>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan"
+            > </activity>
 
         <activity
             android:name=".LoginActivity"
