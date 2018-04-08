@@ -70,6 +70,16 @@
                 android:layout_marginTop="16dp"
                 />
 
+            <TextView
+                android:id="@+id/tvIdeaOriginality"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvUserProjectDescription"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentEnd="true"
+                />
+
             <ProgressBar
                 android:id="@+id/pbUserProjectOriginality"
                 android:layout_width="match_parent"
@@ -93,6 +103,16 @@
                 android:textSize="18dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
+                />
+
+            <TextView
+                android:id="@+id/tvIdeaDifficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pbUserProjectOriginality"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
                 />
 
             <ProgressBar

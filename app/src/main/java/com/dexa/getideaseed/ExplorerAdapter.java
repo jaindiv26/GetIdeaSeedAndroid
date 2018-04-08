@@ -25,20 +25,22 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
 
     private Context context;
     private ArrayList<ModelExplorer> originalArrayList;
-    private ArrayList<ModelExplorer> filteredArrayList = new ArrayList<>();;
+    private ArrayList<ModelExplorer> filteredArrayList = new ArrayList<>();
+    private ArrayList<ModelExplorer> backupList = new ArrayList<>();
     private ClickListener clickListener;
     private HashMap<String,String> hashMap = new HashMap<>();
+    private String searchQuery;
 
     public ExplorerAdapter(Context context, ArrayList<ModelExplorer> arrayList, ClickListener clickListener) {
         this.context = context;
         originalArrayList = arrayList;
         this.clickListener = clickListener;
+        filteredArrayList = arrayList;
     }
 
-    public void updateExplorerData(List<ModelExplorer> updatedList){
-        filteredArrayList.clear();
-        filteredArrayList.addAll(updatedList);
-        notifyDataSetChanged();
+    public void updateBackupList(List<ModelExplorer> updatedList){
+        backupList.clear();
+        backupList.addAll(updatedList);
     }
 
     @Override public NumberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -66,21 +68,29 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
         });
         holder.ivLightBulbClickListener.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                if(modelExplorer.isHasLiked()){
-                    holder.noOfBulbs = holder.noOfBulbs - 1;
-                    holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
-                    holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_unselected));
+                if(PrefManager.getInstance().getBoolean("loggedIn")){
+                    if(modelExplorer.isHasLiked()){
+                        holder.noOfBulbs = holder.noOfBulbs - 1;
+                        holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
+                        holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_unselected));
+                    }
+                    else{
+                        holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_selected));
+                        holder.noOfBulbs = holder.noOfBulbs + 1;
+                        holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
+                    }
+                    if (clickListener != null) {
+                        clickListener.onLightBulbClicked(modelExplorer,modelExplorer.getLightbulbs());
+                    }
                 }
-                else{
-                    holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_selected));
-                    holder.noOfBulbs = holder.noOfBulbs + 1;
-                    holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
-                }
-                if (clickListener != null) {
-                    clickListener.onLightBulbClicked(modelExplorer,modelExplorer.getLightbulbs());
+                else {
+                    MainActivity mainActivity = (MainActivity) context;
+                    mainActivity.showLoginSignUpDialog();
                 }
             }
         });
+        holder.tvProgressOriginality.setText(String.valueOf(modelExplorer.getOrginality()));
+        holder.tvProgressDifficulty.setText(String.valueOf(modelExplorer.getDifficulty()));
 
         if(modelExplorer.isHasLiked()){
             holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_selected));
@@ -116,8 +126,21 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
     @Override public Filter getFilter() {
         return new Filter() {
             @Override protected FilterResults performFiltering(CharSequence constraint) {
-                String charString = constraint.toString();
-                charString = charString.trim();
+                if(constraint !=null){
+                    searchQuery = constraint.toString();
+                    searchQuery = searchQuery.trim();
+                }
+                else {
+                    searchQuery = "";
+                }
+                if(backupList.size() <= originalArrayList.size()){
+                    backupList.clear();
+                    backupList.addAll(originalArrayList);
+                }
+                else {
+                    originalArrayList.clear();
+                    originalArrayList.addAll(backupList);
+                }
                 ArrayList<ModelExplorer> filteredList = new ArrayList<>();
                 int difficultyCount=0,originalityCount=0,progressCount=0,lightBulbCount=0;
 
@@ -132,28 +155,27 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
                     progressCount=0;
                     lightBulbCount=0;
                 }
-                if(hashMap.containsKey("difficulty")){
-                    difficultyCount = Integer.parseInt(hashMap.get("difficulty"));
-                }
-                if(hashMap.containsKey("originality")){
-                    originalityCount = Integer.parseInt(hashMap.get("originality"));
-                }
-                if(hashMap.containsKey("progress")){
-                    progressCount = Integer.parseInt(hashMap.get("progress"));
-                }
-                if(hashMap.containsKey("lightBulbs")){
-                    lightBulbCount = Integer.parseInt(hashMap.get("lightBulbs"));
+                else {
+                    if(hashMap.containsKey("difficulty")){
+                        difficultyCount = Integer.parseInt(hashMap.get("difficulty"));
+                    }
+                    if(hashMap.containsKey("originality")){
+                        originalityCount = Integer.parseInt(hashMap.get("originality"));
+                    }
+                    if(hashMap.containsKey("progress")){
+                        progressCount = Integer.parseInt(hashMap.get("progress"));
+                    }
+                    if(hashMap.containsKey("lightBulbs")){
+                        lightBulbCount = Integer.parseInt(hashMap.get("lightBulbs"));
+                    }
+
                 }
 
-                if(charString.length()>2) {
+
+                if(searchQuery.length()>=2) {
                     for (ModelExplorer modelExplorer : originalArrayList) {
-                        if (modelExplorer.getTitle().toLowerCase().contains(charString)) {
+                        if (modelExplorer.getTitle().toLowerCase().contains(searchQuery)  || modelExplorer.getDescription().toLowerCase().contains(searchQuery.toLowerCase())) {
                             filteredList.add(modelExplorer);
-                        }
-                    }
-                    if(filteredList.size()==0){
-                        if (clickListener != null) {
-                            clickListener.onResultFound(true);
                         }
                     }
                 }
@@ -164,14 +186,34 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
                     else {
                         for (int i = 0; i< originalArrayList.size(); i++){
                             ModelExplorer modelExplorer = originalArrayList.get(i);
-                            if(modelExplorer.getDifficulty()>=difficultyCount && modelExplorer.getProgress()>=progressCount && modelExplorer.getOrginality()>=originalityCount && modelExplorer.getLightbulbs()>=lightBulbCount){
+                            if(hashMap.containsKey("difficulty")){
+                                difficultyCount = Integer.parseInt(hashMap.get("difficulty"));
+                            }
+                            if(hashMap.containsKey("originality")){
+                                originalityCount = Integer.parseInt(hashMap.get("originality"));
+                            }
+                            if(hashMap.containsKey("progress")){
+                                progressCount = Integer.parseInt(hashMap.get("progress"));
+                            }
+                            if(hashMap.containsKey("lightBulbs")){
+                                lightBulbCount = Integer.parseInt(hashMap.get("lightBulbs"));
+                            }
+                            if(difficultyCount == 0){
+                                difficultyCount = modelExplorer.getDifficulty();
+                            }
+                            if(originalityCount == 0){
+                                originalityCount = modelExplorer.getOrginality();
+                            }
+                            if(progressCount == 0){
+                                progressCount = modelExplorer.getProgress();
+                            }
+                            if(lightBulbCount == 0){
+                                lightBulbCount = modelExplorer.getLightbulbs();
+                            }
+                            if(modelExplorer.getDifficulty()==difficultyCount && modelExplorer.getProgress()==progressCount
+                                    && modelExplorer.getOrginality()==originalityCount && modelExplorer.getLightbulbs()==lightBulbCount){
                                 filteredList.add(modelExplorer);
                             }
-                        }
-                    }
-                    if(filteredList.size()>0){
-                        if (clickListener != null) {
-                            clickListener.onResultFound(false);
                         }
                     }
                 }
@@ -181,19 +223,21 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
             }
 
             @Override protected void publishResults(CharSequence constraint, FilterResults results) {filteredArrayList.clear();
-                if(results.values == null){
-                    updateExplorerData(new ArrayList<ModelExplorer>());
+                filteredArrayList.clear();
+                if(results.values != null){
+                    filteredArrayList.addAll((ArrayList<ModelExplorer>) results.values);
                 }
-                else{
-                    updateExplorerData((List<ModelExplorer>) results.values);
+                if(clickListener != null){
+                    clickListener.onResultFound(filteredArrayList.isEmpty());
                 }
+                notifyDataSetChanged();
             }
         };
     }
 
     public class NumberViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvUserName, tvProjectTitle, tvProjectDescription, tvNoOfBulbs;
+        private TextView tvUserName, tvProjectTitle, tvProjectDescription, tvNoOfBulbs,tvProgressOriginality,tvProgressDifficulty;
         private ProgressBar pbOriginality, pbDifficulty;
         private Button feedBackButton;
         private ImageView ivProjectProgress, ivLightBulbClickListener;
@@ -210,6 +254,8 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
             feedBackButton = itemView.findViewById(R.id.btFeedback);
             ivProjectProgress = itemView.findViewById(R.id.ivWorkProgress);
             ivLightBulbClickListener = itemView.findViewById(R.id.ivLightBulbLiked);
+            tvProgressOriginality = itemView.findViewById(R.id.tvProgressOriginality);
+            tvProgressDifficulty = itemView.findViewById(R.id.tvProgressDifficulty);
         }
     }
 

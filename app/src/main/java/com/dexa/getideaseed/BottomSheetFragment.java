@@ -1,7 +1,7 @@
 package com.dexa.getideaseed;
 
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,10 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.volley.NoConnectionError;
-import com.android.volley.VolleyError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,11 +29,10 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     private Context context;
     private Spinner spDifficulty,spOriginality,spProgress,spLightbulbs;
     private TextView tvDifficulty,tvOriginality,tvProgress,tvLightbulbs,tvSearchTitle;
-    private Button btClose,btSearchButton,btResetButton;
-    private ProgressDialog progressDialog;
-    private ApiManagerListener apiManagerListener;
+    private Button btClose, btApplyFilterButton,btResetButton;
     private int flag = 0,difficultyFlag=0,originalityFlag =0,progressFlag=0,lightBulbsFlag=0;
     private View view;
+    private HashMap<String, String> hashMap = new HashMap<String, String>();
 
     public static BottomSheetFragment newInstance(Bundle bundle) {
         BottomSheetFragment instance = new BottomSheetFragment();
@@ -177,7 +172,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         spProgress = view.findViewById(R.id.spProgress);
         spLightbulbs = view.findViewById(R.id.spLightBulbs);
         btClose = view.findViewById(R.id.btCloseButton);
-        btSearchButton = view.findViewById(R.id.btSearchButton);
+        btApplyFilterButton = view.findViewById(R.id.btSearchButton);
         tvDifficulty = view.findViewById(R.id.tvDiff);
         tvOriginality = view.findViewById(R.id.tvOrigin);
         tvProgress = view.findViewById(R.id.tvProgress);
@@ -191,16 +186,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             }
         });
 
-        btSearchButton.setOnClickListener(new View.OnClickListener() {
+        btApplyFilterButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                HashMap<String, String> hashMap = new HashMap<String, String>();
-                hashMap.put("difficulty",String.valueOf(spDifficulty.getSelectedItemPosition()));
-                hashMap.put("originality",String.valueOf(spOriginality.getSelectedItemPosition()));
-                hashMap.put("progress",String.valueOf(spProgress.getSelectedItemPosition()));
-                hashMap.put("lightBulbs",String.valueOf(spLightbulbs.getSelectedItemPosition()));
-                MainActivity mainActivity = (MainActivity) context;
-                flag=difficultyFlag+originalityFlag+progressFlag+lightBulbsFlag;
-                mainActivity.sendData(hashMap,flag);
                 dismiss();
             }
         });
@@ -338,15 +325,6 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                 spProgress.setSelection(0);
                 spLightbulbs.setSelection(0);
                 btResetButton.setVisibility(View.GONE);
-
-                HashMap<String, String> hashMap = new HashMap<String, String>();
-                hashMap.put("difficulty",String.valueOf(0));
-                hashMap.put("originality",String.valueOf(0));
-                hashMap.put("progress",String.valueOf(0));
-                hashMap.put("lightBulbs",String.valueOf(0));
-                MainActivity mainActivity = (MainActivity) context;
-                flag=0;
-                mainActivity.sendData(hashMap,flag);
             }
         });
 
@@ -413,54 +391,28 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         spLightbulbs.setSelection(0);
     }
 
-    private void fetchData(){
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Loading..."); // Setting Message
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
-        progressDialog.show(); // Display Progress Dialog
-        progressDialog.setCancelable(false);
+    @Override public void onDismiss(DialogInterface dialog) {
+        MainActivity mainActivity = (MainActivity) context;
+        isAnyFilterApplied();
+        mainActivity.bottomSheetDismissedToast(hashMap,flag);
+        super.onDismiss(dialog);
+    }
 
-        apiManagerListener = new ApiManagerListener() {
-            @Override public void onSuccess(String response) {
-                progressDialog.dismiss();
-            }
-
-            @Override public void onError(VolleyError error) {
-                progressDialog.dismiss();
-
-                if(error instanceof NoConnectionError){
-                    Toast.makeText(context,
-                            "No Internet access", Toast.LENGTH_LONG).show();
-                }
-                else{
-                    Toast.makeText(context,
-                            "Something went bad", Toast.LENGTH_LONG).show();
-                }
-
-            }
-
-            @Override public void statusCode(int statusCode) {
-
-            }
-        };
-
-        String url = "https://www.getideaseed.com/api/ideas/search/current-user";
-
-        HashMap<String,String> hashMap = new HashMap<>();
-        hashMap.put("difficulty",String.valueOf(spDifficulty.getSelectedItemPosition()));
-            if(spLightbulbs.getSelectedItemPosition()==0)
-        hashMap.put("lightbulbs","lightbulbs");
-
-            if(spLightbulbs.getSelectedItemPosition()==1)
-        hashMap.put("lightbulbs","lightbulbs");
-
-            if(spLightbulbs.getSelectedItemPosition()==2)
-        hashMap.put("lightbulbs","lightbulbs");
-        hashMap.put("originality",String.valueOf(spOriginality.getSelectedItemPosition()));
-        hashMap.put("progress",String.valueOf(spProgress.getSelectedItemPosition()+1));
-        hashMap.put("userName",PrefManager.getInstance().getString("username"));
-
-        ApiManager apiManager = new ApiManager(apiManagerListener);
-        apiManager.postRequest(context,url,hashMap);
+    private boolean isAnyFilterApplied(){
+        flag=difficultyFlag+originalityFlag+progressFlag+lightBulbsFlag;
+        if(flag == 0){
+            hashMap.put("difficulty",String.valueOf(0));
+            hashMap.put("originality",String.valueOf(0));
+            hashMap.put("progress",String.valueOf(0));
+            hashMap.put("lightBulbs",String.valueOf(0));
+            return false;
+        }
+        else {
+            hashMap.put("difficulty",String.valueOf(spDifficulty.getSelectedItemPosition()));
+            hashMap.put("originality",String.valueOf(spOriginality.getSelectedItemPosition()));
+            hashMap.put("progress",String.valueOf(spProgress.getSelectedItemPosition()));
+            hashMap.put("lightBulbs",String.valueOf(spLightbulbs.getSelectedItemPosition()));
+            return true;
+        }
     }
 }

@@ -185,7 +185,6 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void fetchData(){
-
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Loading..."); // Setting Message
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
@@ -206,6 +205,7 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
                         e.printStackTrace();
                     }
                 }
+
             }
             @Override public void onError(VolleyError error) {
                 progressDialog.dismiss();
@@ -295,7 +295,7 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
     }
 
     public void hashMapParams(HashMap<String,String> hashMap){
-        hashMap.put("description",projectDescription.getText().toString());
+        hashMap.put("description",projectDescription.getText().toString().trim());
         hashMap.put("difficulty",String.valueOf(projectDifficulty.getProgress()));
         if(projectVisibility.isChecked() == false){
             hashMap.put("isPrivate",String.valueOf(true));
@@ -309,7 +309,7 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
         hashMap.put("lightbulbs","0");
         hashMap.put("originality",String.valueOf(projectOrginality.getProgress()));
         hashMap.put("progress",String.valueOf(spinner.getSelectedItemPosition()+1));
-        hashMap.put("title",projectTitle.getText().toString());
+        hashMap.put("title",projectTitle.getText().toString().trim());
         hashMap.put("userId",PrefManager.getInstance().getString("userID"));
         hashMap.put("userName",PrefManager.getInstance().getString("username"));
         hashMap.put("_id",ideaId);

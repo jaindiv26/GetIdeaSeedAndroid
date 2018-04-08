@@ -8,5 +8,5 @@ public interface HomeAdapterClickListener {
     void onEdit (ModelExplorer modelExplorer,int position);
     void onDelete (ModelExplorer modelExplorer);
     void onFeedback(ModelExplorer modelExplorer);
-    void onNoResultFound(boolean result);
+    void onNoResultFound(boolean result,boolean backUpListIsEmpty);
 }

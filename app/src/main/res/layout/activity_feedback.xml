@@ -67,11 +67,11 @@
                             android:layout_below="@id/tvFeedbackUseName"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="12dp"
                             android:fontFamily="@font/poppins"
                             android:text="Project Title"
                             android:textColor="@color/black"
-                            android:textSize="32dp"
+                            android:textSize="36dp"
                             android:textStyle="italic"
                             />
 
@@ -83,7 +83,6 @@
                             android:text="Project Description"
                             android:textSize="20dp"
                             android:textStyle="italic"
-                            android:layout_marginTop="16dp"
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
                             />
@@ -95,11 +94,19 @@
                             android:layout_below="@id/tvFeedbackProjectDescription"
                             android:text="Originality"
                             android:textSize="16dp"
-                            android:textColor="@color/lightBlack"
                             android:textStyle="italic"
-                            android:fontFamily="@font/poppins"
                             android:layout_marginTop="16dp"
                             android:layout_marginLeft="16dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvFeedbackOriginalityProgress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tvFeedbackProjectDescription"
+                            android:layout_marginTop="16dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="16dp"
                             />
 
                         <ProgressBar
@@ -122,11 +129,19 @@
                             android:layout_below="@id/pbFeedbackOriginality"
                             android:text="Difficulty"
                             android:textSize="16dp"
-                            android:textColor="@color/lightBlack"
                             android:textStyle="italic"
-                            android:fontFamily="@font/poppins"
                             android:layout_marginTop="16dp"
                             android:layout_marginLeft="16dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/tvFeedbackDifficultyProgress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/pbFeedbackOriginality"
+                            android:layout_marginTop="16dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="16dp"
                             />
 
                         <ProgressBar
@@ -142,13 +157,14 @@
                             style="@style/DifficultyProgressBar"
                             />
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@id/pbFeedbackDifficulty"
-                            android:layout_marginRight="16dp"
-                            android:layout_marginTop="16dp"
                             android:layout_alignParentRight="true"
+                            android:layout_marginTop="16dp"
+                            android:orientation="vertical"
+                            android:layout_marginEnd="16dp"
                             >
 
                             <ImageView
@@ -156,23 +172,21 @@
                                 android:layout_width="48dp"
                                 android:layout_height="40dp"
                                 android:background="@drawable/like_bulb_no_like"
-                                android:layout_marginTop="16dp"
-                                android:layout_alignParentRight="true"
                                 />
 
                             <TextView
                                 android:id="@+id/tvFeedbackNoOfBulb"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@id/ivLightBulb"
-                                android:text="4"
-                                android:gravity="center"
-                                android:layout_marginRight="20dp"
+                                android:text="44"
+                                android:layout_marginTop="4dp"
                                 android:layout_marginBottom="16dp"
-                                android:layout_alignParentRight="true"
+                                android:padding="4dp"
+                                android:layout_gravity="center"
+                                android:textAlignment="center"
                                 />
 
-                        </RelativeLayout>
+                        </LinearLayout>
 
                     </RelativeLayout>
 

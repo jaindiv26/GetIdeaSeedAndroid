@@ -49,6 +49,8 @@ public class HomeFragment extends Fragment {
     private RelativeLayout relativeLayout;
     private RelativeLayout rlEmptyView;
     int x = 0;
+    private String searchQuery;
+    private HashMap<String, String> hashMapFilterApplied = new HashMap<>();
 
     public static HomeFragment newInstance(Bundle bundle) {
         HomeFragment instance = new HomeFragment();
@@ -76,12 +78,6 @@ public class HomeFragment extends Fragment {
 
     @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(isInternetOn(context)){
-            fetchData();
-        }
-        else {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
     }
 
     private void initComponents(View view) {
@@ -118,27 +114,21 @@ public class HomeFragment extends Fragment {
                 startActivity(i);
             }
 
-            @Override public void onNoResultFound(boolean result) {
-                if (result){
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override public void run() {
-                            relativeLayout.setVisibility(View.VISIBLE);
-                            ivSearchIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_search_white_24dp));
-                            tvSearchResult.setText("No Results");
-                            rlEmptyView.setClickable(false);
-                        }
-                    });
+            @Override public void onNoResultFound(boolean result,boolean backUpListIsEmpty) {
+                if(!backUpListIsEmpty){
+                    if (result){
+                        relativeLayout.setVisibility(View.VISIBLE);
+                        ivSearchIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_search_white_24dp));
+                        tvSearchResult.setText("No Results");
+                        rlEmptyView.setClickable(false);
+                    }
+                    else {
+                        ivSearchIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.tool));
+                        tvSearchResult.setText("Plant A Seed");
+                        relativeLayout.setVisibility(View.GONE);
+                    }
+                }
 
-                }
-                else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override public void run() {
-                            ivSearchIcon.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.tool));
-                            tvSearchResult.setText("Plant A Seed");
-                            relativeLayout.setVisibility(View.GONE);
-                        }
-                    });
-                }
             }
         };
 
@@ -170,8 +160,10 @@ public class HomeFragment extends Fragment {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                MainActivity mainActivity = (MainActivity) context;
-                mainActivity.touchListener(1);
+                if(dy>0 && dx==0){
+                    MainActivity mainActivity = (MainActivity) context;
+                    mainActivity.touchListener(1);
+                }
             }
         });
 
@@ -203,7 +195,18 @@ public class HomeFragment extends Fragment {
 
                         }
                     }
-                    homeAdapter.updateData(serverArrayList);
+                    if(serverArrayList.size() ==0){
+                        relativeLayout.setVisibility(View.VISIBLE);
+                        fabNewIdea.hide();
+                        rlEmptyView.setClickable(true);
+                    }
+                    else{
+                        relativeLayout.setVisibility(View.GONE);
+                        fabNewIdea.show();
+                    }
+                    homeAdapter.notifyDataSetChanged();
+                    homeAdapter.updateBackupList(serverArrayList);
+                    homeFragmentSearch(searchQuery, hashMapFilterApplied);
                     mSwipeRefreshLayout.setRefreshing(false);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -244,7 +247,19 @@ public class HomeFragment extends Fragment {
                 if(index>=0){
                     serverArrayList.remove(index);
                     // 2. Notify adapter at position.
+
+                    if(serverArrayList.size() ==0){
+                        relativeLayout.setVisibility(View.VISIBLE);
+                        fabNewIdea.hide();
+                        rlEmptyView.setClickable(true);
+                    }
+                    else{
+                        relativeLayout.setVisibility(View.GONE);
+                        fabNewIdea.show();
+                    }
                     homeAdapter.notifyItemRemoved(index);
+                    homeAdapter.updateBackupList(serverArrayList);
+                    homeFragmentSearch(searchQuery, hashMapFilterApplied);
                 }
                 progressDialog.dismiss();
             }
@@ -293,13 +308,16 @@ public class HomeFragment extends Fragment {
                     modelExplorer = data.getParcelableExtra("modelExplorerValue");
                     serverArrayList.add(modelExplorer);
                     homeAdapter.notifyItemInserted(serverArrayList.size());
+                    homeAdapter.updateBackupList(serverArrayList);
+                    homeFragmentSearch(searchQuery, hashMapFilterApplied);
                     if(serverArrayList.size() ==0){
                         relativeLayout.setVisibility(View.VISIBLE);
-                        fabNewIdea.setVisibility(View.GONE);
+                        fabNewIdea.hide();
+                        rlEmptyView.setClickable(true);
                     }
                     else{
                         relativeLayout.setVisibility(View.GONE);
-                        fabNewIdea.setVisibility(View.VISIBLE);
+                        fabNewIdea.show();
                     }
                 }
         }
@@ -309,14 +327,16 @@ public class HomeFragment extends Fragment {
                 modelExplorer = data.getParcelableExtra("modelExplorerEditValue");
                 serverArrayList.set(x,modelExplorer);
                 homeAdapter.notifyItemChanged(x);
-
+                homeAdapter.updateBackupList(serverArrayList);
+                homeFragmentSearch(searchQuery, hashMapFilterApplied);
                 if(serverArrayList.size() ==0){
                     relativeLayout.setVisibility(View.VISIBLE);
-                    fabNewIdea.setVisibility(View.GONE);
+                    fabNewIdea.hide();
+                    rlEmptyView.setClickable(true);
                 }
                 else{
                     relativeLayout.setVisibility(View.GONE);
-                    fabNewIdea.setVisibility(View.VISIBLE);
+                    fabNewIdea.show();
                 }
             }
         }
@@ -349,6 +369,8 @@ public class HomeFragment extends Fragment {
     }
 
     public void homeFragmentSearch(String query,HashMap<String,String> hashMap){
+        searchQuery = query;
+        hashMapFilterApplied =hashMap;
         homeAdapter.setFilterHashMap(hashMap);
         homeAdapter.getFilter().filter(query);
     }

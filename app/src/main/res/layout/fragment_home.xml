@@ -10,7 +10,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/lightGrey"
+            >
 
             <RelativeLayout
                 android:id="@+id/rvPlantASeed"
@@ -30,6 +32,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:animateLayoutChanges="true"
+                    android:background="@color/lightGrey"
                     >
 
                     <TextView
@@ -77,6 +80,7 @@
                 android:paddingBottom="88dp"
                 android:clipToPadding="false"
                 android:clipChildren="false"
+                android:background="@color/lightGrey"
                 >
             </android.support.v7.widget.RecyclerView>
 
@@ -89,6 +93,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="16dp"
+                android:visibility="gone"
+                android:background="@color/lightGrey"
                 />
 
         </RelativeLayout>

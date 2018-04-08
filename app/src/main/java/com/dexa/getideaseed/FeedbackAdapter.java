@@ -61,6 +61,8 @@ public class FeedbackAdapter extends RecyclerView.Adapter<FeedbackAdapter.Number
                     holder.comments.setVisibility(View.VISIBLE);
                     holder.editComment.setVisibility(View.GONE);
                     holder.editButton.setText("Edit");
+                    holder.editComment.setSelection(holder.editComment.length());
+                    holder.editComment.requestFocus();
                     if(clickListener != null){
                         clickListener.onClick(modelFeedback,holder.editComment.getText().toString());
                     }

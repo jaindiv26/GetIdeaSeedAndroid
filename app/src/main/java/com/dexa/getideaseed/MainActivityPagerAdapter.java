@@ -27,6 +27,10 @@ public class MainActivityPagerAdapter extends FragmentPagerAdapter {
         return null;
     }
 
+    public List<Fragment> getViewPagerFragments(){
+        return fragmentManager.getFragments();
+    }
+
     @Override public Fragment getItem(int position) {
 
         switch (position){

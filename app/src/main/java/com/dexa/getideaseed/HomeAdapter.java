@@ -27,7 +27,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
     private ArrayList<ModelExplorer> originalArrayList;
     private HomeAdapterClickListener homeAdapterClickListener;
     private ArrayList<ModelExplorer> filteredArrayList = new ArrayList<>();
+    private ArrayList<ModelExplorer> backupList = new ArrayList<>();
     private HashMap<String,String> hashMap = new HashMap<>();
+    private String searchQuery;
 
     public HomeAdapter(Context context, ArrayList<ModelExplorer> arrayList, HomeAdapterClickListener homeAdapterClickListener) {
         this.context = context;
@@ -36,10 +38,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
         filteredArrayList = arrayList;
     }
 
-    public void updateData(List<ModelExplorer> updatedList){
-        filteredArrayList.clear();
-        filteredArrayList.addAll(updatedList);
-        notifyDataSetChanged();
+    public void updateBackupList(List<ModelExplorer> updatedList){
+        backupList.clear();
+        backupList.addAll(updatedList);
     }
 
     @Override public NumberViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -89,7 +90,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
         }
 
         holder.cbUserProjectVisibility.setClickable(false);
-
+        holder.tvIdeaOriginality.setText(String.valueOf(modelExplorer.getOrginality()));
+        holder.tvIdeaDifficulty.setText(String .valueOf(modelExplorer.getDifficulty()));
         if(modelExplorer.getPrivate()){
             holder.cbUserProjectVisibility.setChecked(false);
             holder.cbUserProjectVisibility.setText("  Private");
@@ -116,8 +118,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
     @Override public Filter getFilter() {
         return new Filter() {
             @Override protected FilterResults performFiltering(CharSequence constraint) {
-                String charString = constraint.toString();
-                charString = charString.trim();
+                searchQuery = constraint.toString();
+                searchQuery = searchQuery.trim();
+                if(backupList.size() <= originalArrayList.size()){
+                    backupList.clear();
+                    backupList.addAll(originalArrayList);
+                }
+                else {
+                    originalArrayList.clear();
+                    originalArrayList.addAll(backupList);
+                }
                 ArrayList<ModelExplorer> filteredList = new ArrayList<>();
                 int difficultyCount=0,originalityCount=0,progressCount=0,lightBulbCount=0;
 
@@ -132,29 +142,26 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
                     progressCount=0;
                     lightBulbCount=0;
                 }
-                if(hashMap.containsKey("difficulty")){
-                    difficultyCount = Integer.parseInt(hashMap.get("difficulty"));
-                }
-                if(hashMap.containsKey("originality")){
-                    originalityCount = Integer.parseInt(hashMap.get("originality"));
-                }
-                if(hashMap.containsKey("progress")){
-                    progressCount = Integer.parseInt(hashMap.get("progress"));
-                }
-                if(hashMap.containsKey("lightBulbs")){
-                    lightBulbCount = Integer.parseInt(hashMap.get("lightBulbs"));
-                }
-
-
-                if(charString.length()>2) {
-                    for (ModelExplorer modelExplorer : originalArrayList) {
-                        if (modelExplorer.getTitle().toLowerCase().contains(charString)) {
-                            filteredList.add(modelExplorer);
-                        }
+                else {
+                    if(hashMap.containsKey("difficulty")){
+                        difficultyCount = Integer.parseInt(hashMap.get("difficulty"));
                     }
-                    if(filteredList.size()==0){
-                        if(homeAdapterClickListener != null){
-                            homeAdapterClickListener.onNoResultFound(true);
+                    if(hashMap.containsKey("originality")){
+                        originalityCount = Integer.parseInt(hashMap.get("originality"));
+                    }
+                    if(hashMap.containsKey("progress")){
+                        progressCount = Integer.parseInt(hashMap.get("progress"));
+                    }
+                    if(hashMap.containsKey("lightBulbs")){
+                        lightBulbCount = Integer.parseInt(hashMap.get("lightBulbs"));
+                    }
+                }
+
+
+                if(searchQuery.length()>=2) {
+                    for (ModelExplorer modelExplorer : originalArrayList) {
+                        if (modelExplorer.getTitle().toLowerCase().contains(searchQuery.toLowerCase()) || modelExplorer.getDescription().toLowerCase().contains(searchQuery.toLowerCase())) {
+                            filteredList.add(modelExplorer);
                         }
                     }
                 }
@@ -165,19 +172,34 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
                     else {
                         for (int i = 0; i< originalArrayList.size(); i++){
                             ModelExplorer modelExplorer = originalArrayList.get(i);
-                            if(modelExplorer.getDifficulty()>=difficultyCount && modelExplorer.getProgress()>=progressCount && modelExplorer.getOrginality()>=originalityCount && modelExplorer.getLightbulbs()>=lightBulbCount){
+                            if(hashMap.containsKey("difficulty")){
+                                difficultyCount = Integer.parseInt(hashMap.get("difficulty"));
+                            }
+                            if(hashMap.containsKey("originality")){
+                                originalityCount = Integer.parseInt(hashMap.get("originality"));
+                            }
+                            if(hashMap.containsKey("progress")){
+                                progressCount = Integer.parseInt(hashMap.get("progress"));
+                            }
+                            if(hashMap.containsKey("lightBulbs")){
+                                lightBulbCount = Integer.parseInt(hashMap.get("lightBulbs"));
+                            }
+                            if(difficultyCount == 0){
+                                difficultyCount = modelExplorer.getDifficulty();
+                            }
+                            if(originalityCount == 0){
+                                originalityCount = modelExplorer.getOrginality();
+                            }
+                            if(progressCount == 0){
+                                progressCount = modelExplorer.getProgress();
+                            }
+                            if(lightBulbCount == 0){
+                                lightBulbCount = modelExplorer.getLightbulbs();
+                            }
+                            if(modelExplorer.getDifficulty()==difficultyCount && modelExplorer.getProgress()==progressCount
+                                    && modelExplorer.getOrginality()==originalityCount && modelExplorer.getLightbulbs()==lightBulbCount){
                                 filteredList.add(modelExplorer);
                             }
-                        }
-                    }
-                    if(filteredList.size()>0){
-                        if(homeAdapterClickListener != null){
-                            homeAdapterClickListener.onNoResultFound(false);
-                        }
-                    }
-                    else if(filteredList.size()==0){
-                        if(homeAdapterClickListener != null){
-                            homeAdapterClickListener.onNoResultFound(true);
                         }
                     }
                 }
@@ -188,18 +210,19 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
 
             @Override protected void publishResults(CharSequence constraint, FilterResults results) {
                 filteredArrayList.clear();
-                if(results.values == null){
-                    updateData(new ArrayList<ModelExplorer>());
+                if(results.values != null){
+                    filteredArrayList.addAll((ArrayList<ModelExplorer>) results.values);
                 }
-                else{
-                    updateData((List<ModelExplorer>) results.values);
+                if(homeAdapterClickListener != null){
+                    homeAdapterClickListener.onNoResultFound(filteredArrayList.isEmpty(),backupList.isEmpty());
                 }
+                notifyDataSetChanged();
             }
         };
     }
 
     public class NumberViewHolder extends RecyclerView.ViewHolder {
-        private TextView tvUserProjectName,tvUserProjectDescription;
+        private TextView tvUserProjectName,tvUserProjectDescription,tvIdeaOriginality,tvIdeaDifficulty;
         private ProgressBar pbUserProjectOriginality,pbUserProjectDifficulty;
         private CheckBox cbUserProjectVisibility;
         private Button btUserProjectEdit,btUserProjectFeedback,btUserProjectDelete;
@@ -215,6 +238,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
             btUserProjectFeedback = itemView.findViewById(R.id.btUserProjectFeedback);
             btUserProjectDelete = itemView.findViewById(R.id.btUserProjectDelete);
             ivIdeaProgress = itemView.findViewById(R.id.ivIdeaProgress);
+            tvIdeaDifficulty = itemView.findViewById(R.id.tvIdeaDifficulty);
+            tvIdeaOriginality = itemView.findViewById(R.id.tvIdeaOriginality);
         }
     }
 

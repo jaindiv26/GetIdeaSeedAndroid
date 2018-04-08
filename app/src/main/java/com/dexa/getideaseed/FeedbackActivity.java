@@ -31,7 +31,7 @@ import java.util.HashMap;
 
 public class FeedbackActivity extends AppCompatActivity {
 
-    private TextView tvIdeaUsername,tvIdeaTitle,tvIdeaDescription,tvNoOfBulbs,tvGuestUsername;
+    private TextView tvIdeaUsername,tvIdeaTitle,tvIdeaDescription,tvNoOfBulbs,tvGuestUsername,tvDifficultyProgress,tvOriginalityProgress;
     private EditText etGuestComment;
     private Button btSubmit;
     private ProgressBar pbOriginality,pbDifficulty;
@@ -47,9 +47,6 @@ public class FeedbackActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Toolbar mToolbar;
 
-
-
-
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
@@ -64,6 +61,8 @@ public class FeedbackActivity extends AppCompatActivity {
             pbDifficulty.setProgress(modelExplorer.getDifficulty());
             tvNoOfBulbs.setText(Integer.toString(modelExplorer.getLightbulbs()));
             uniqueID = modelExplorer.getUniqueId();
+            tvOriginalityProgress.setText(String.valueOf(modelExplorer.getOrginality()));
+            tvDifficultyProgress.setText(String.valueOf(modelExplorer.getDifficulty()));
         }
         fetchData();
     }
@@ -81,6 +80,8 @@ public class FeedbackActivity extends AppCompatActivity {
         etGuestComment = findViewById(R.id.etGuestComment);
         btSubmit = findViewById(R.id.btSubmitButton);
         mToolbar =findViewById(R.id.feedbackToolbar);
+        tvDifficultyProgress = findViewById(R.id.tvFeedbackDifficultyProgress);
+        tvOriginalityProgress = findViewById(R.id.tvFeedbackOriginalityProgress);
 
         btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
@@ -205,6 +206,7 @@ public class FeedbackActivity extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
         progressDialog.show(); // Display Progress Dialog
         progressDialog.setCancelable(false);
+
         apiManagerListener = new ApiManagerListener() {
             @Override public void onSuccess(String response) {
                 progressDialog.dismiss();
@@ -230,7 +232,7 @@ public class FeedbackActivity extends AppCompatActivity {
         };
 
         HashMap<String,String> hashMap = new HashMap<>();
-        hashMap.put("message",comment);
+        hashMap.put("message",comment.trim());
         String url = "https://www.getideaseed.com/api/idea/feedback/"+modelFeedback.getFeedbackId();
 
         ApiManager apiManager = new ApiManager(apiManagerListener);

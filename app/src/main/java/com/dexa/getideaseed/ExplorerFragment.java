@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -37,6 +38,9 @@ public class ExplorerFragment extends Fragment{
     private ArrayList<ModelExplorer> explorerServerArrayList = new ArrayList<>();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ApiManagerListener apiManagerListener;
+    private RelativeLayout relativeLayout;
+    private String searchQuery;
+    private HashMap<String, String> hashMapFilterApplied = new HashMap<>();
 
     public static ExplorerFragment newInstance(Bundle bundle) {
         ExplorerFragment instance = new ExplorerFragment();
@@ -69,6 +73,7 @@ public class ExplorerFragment extends Fragment{
     private void initComponents(View view) {
         recyclerView = view.findViewById(R.id.rvExplorer);
         mSwipeRefreshLayout = view.findViewById(R.id.srExplorer);
+        relativeLayout = view.findViewById(R.id.rvOnNoResultFound);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override public void onRefresh() {
@@ -83,9 +88,15 @@ public class ExplorerFragment extends Fragment{
 
         ClickListener clickListener = new ClickListener() {
             @Override public void onClick(ModelExplorer modelExplorer) {
-                Intent i = new Intent(context, FeedbackActivity.class);
-                i.putExtra("feedbackUserData",modelExplorer);
-                context.startActivity(i);
+                if(!PrefManager.getInstance().getBoolean("loggedIn")){
+                    MainActivity mainActivity = (MainActivity) context;
+                    mainActivity.showLoginSignUpDialog();
+                }
+                else {
+                    Intent i = new Intent(context, FeedbackActivity.class);
+                    i.putExtra("feedbackUserData",modelExplorer);
+                    context.startActivity(i);
+                }
             }
 
             @Override public void onClick(ModelFeedback modelFeedback,String comment) {
@@ -93,14 +104,30 @@ public class ExplorerFragment extends Fragment{
             }
 
             @Override public void onResultFound(boolean result) {
-
+                if(result){
+                    relativeLayout.setVisibility(View.VISIBLE);
+                }
+                else {
+                    relativeLayout.setVisibility(View.GONE);
+                }
             }
 
             @Override public void onLightBulbClicked(ModelExplorer modelExplorer, int numberOfBulbs) {
+
                 lightBulbButton(modelExplorer,numberOfBulbs);
             }
 
         };
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(dy>0 && dx==0){
+                    MainActivity mainActivity = (MainActivity) context;
+                    mainActivity.touchListener(1);
+                }
+            }
+        });
+        relativeLayout.setVisibility(View.GONE);
         explorerAdapter = new ExplorerAdapter(context, explorerServerArrayList,clickListener);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(explorerAdapter);
@@ -124,7 +151,8 @@ public class ExplorerFragment extends Fragment{
                         JSONObject resultJSONObject = jsonArray.getJSONObject(i);
                         explorerServerArrayList.add(setter(resultJSONObject));
                     }
-                    explorerAdapter.updateExplorerData(explorerServerArrayList);
+                    explorerAdapter.updateBackupList(explorerServerArrayList);
+                    explorerFragmentSearch(searchQuery, hashMapFilterApplied);
                     mSwipeRefreshLayout.setRefreshing(false);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -143,7 +171,6 @@ public class ExplorerFragment extends Fragment{
         String url ="https://www.getideaseed.com/api/ideas/public";
         ApiManager apiManager = new ApiManager(apiManagerListener);
         apiManager.getRequest(context,url);
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private ModelExplorer setter(JSONObject js) throws JSONException {
@@ -181,14 +208,20 @@ public class ExplorerFragment extends Fragment{
 
     @Override public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser){
-            if(isInternetOn(context)){
-                fetchData();
-            }
-            else {
-                mSwipeRefreshLayout.setRefreshing(false);
+        if(context == null){
+            return;
+        }
+        else{
+            if (isVisibleToUser){
+                if(isInternetOn(context)){
+                    fetchData();
+                }
+                else {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
             }
         }
+
     }
 
     public static boolean isInternetOn(Context context) {
@@ -210,6 +243,8 @@ public class ExplorerFragment extends Fragment{
     }
 
     public void explorerFragmentSearch(String query,HashMap<String,String> hashMap){
+        searchQuery = query;
+        hashMapFilterApplied =hashMap;
         explorerAdapter.getFilter().filter(query);
         explorerAdapter.getData(hashMap);
     }
