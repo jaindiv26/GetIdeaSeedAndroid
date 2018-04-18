@@ -9,7 +9,7 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_lightbulb_outline_black_24dp"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme"
@@ -18,7 +18,7 @@
             android:name=".MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustPan"
-            > </activity>
+            />
 
         <activity
             android:name=".LoginActivity"
@@ -32,8 +32,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".NewIdeaActivity"> </activity>
-        <activity android:name=".FeedbackActivity"></activity>
+        <activity android:name=".NewIdeaActivity"/>
+        <activity android:name=".FeedbackActivity"/>
 
         <meta-data
             android:name="preloaded_fonts"

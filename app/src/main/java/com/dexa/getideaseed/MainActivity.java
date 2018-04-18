@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout rootView;
     private HashMap<String, String> hashMap = new HashMap<>();
     private MainActivityPagerAdapter mainActivityPagerAdapter;
-    private Fragment fragment;
+    private int intentPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         initComponents();
         onTabsClicked();
+        processExtraData();
     }
 
     private void onTabsClicked() {
@@ -111,7 +112,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void postLoginChanges() {
-        if (!PrefManager.getInstance().getBoolean("loggedIn")) {
+        if (PrefManager.getInstance().getBoolean("loggedIn")) {
+            exploreImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.unselected_explore_botton));
+            homeImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.home_botton));
+            homeBar.setTextColor(ContextCompat.getColor(context, R.color.lightGreen));
+            exploreBar.setTextColor(ContextCompat.getColor(context, R.color.darkGrey));
+            menuItemLogOut.setTitle("Log Out");
+            viewPager.setPagingEnabled(true);
+
+            mainActivityPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(mainActivityPagerAdapter);
+            if(intentPosition == 0 || intentPosition == 1){
+                viewPager.setCurrentItem(intentPosition);
+            }
+            else {
+                viewPager.setCurrentItem(0);
+            }
+
+        } else {
             homeImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.unselected_home_botton));
             exploreImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.explore_botton));
             homeBar.setTextColor(ContextCompat.getColor(context, R.color.darkGrey));
@@ -122,18 +140,9 @@ public class MainActivity extends AppCompatActivity {
             mainActivityPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(mainActivityPagerAdapter);
             viewPager.setCurrentItem(1);
-        } else {
-            exploreImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.unselected_explore_botton));
-            homeImage.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.home_botton));
-            homeBar.setTextColor(ContextCompat.getColor(context, R.color.lightGreen));
-            exploreBar.setTextColor(ContextCompat.getColor(context, R.color.darkGrey));
-            menuItemLogOut.setTitle("Log Out");
-            viewPager.setPagingEnabled(true);
-
-            mainActivityPagerAdapter = new MainActivityPagerAdapter(getSupportFragmentManager());
-            viewPager.setAdapter(mainActivityPagerAdapter);
-            viewPager.setCurrentItem(0);
         }
+
+
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
@@ -162,16 +171,18 @@ public class MainActivity extends AppCompatActivity {
     @Override public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuItemLogOut: {
-                if(!PrefManager.getInstance().getBoolean("loggedIn")){
-                    Intent i = new Intent(context, LoginActivity.class);
-                    i.putExtra("showLoginView",true);
-                    context.startActivity(i);
+                if(PrefManager.getInstance().getBoolean("loggedIn")){
+                    PrefManager.getInstance().getPrefs().edit().clear().apply();
+                    startActivity(new Intent(context, LoginActivity.class));
+                    AppShortcutUtil appShortcutUtil = new AppShortcutUtil();
+                    appShortcutUtil.changeShortcutOnSignedOut(context);
+                    finish();
                     return true;
                 }
                 else {
-                    PrefManager.getInstance().getPrefs().edit().clear().apply();
-                    startActivity(new Intent(context, LoginActivity.class));
-                    finish();
+                    Intent i = new Intent(context, LoginActivity.class);
+                    i.putExtra("showLoginView",true);
+                    context.startActivity(i);
                     return true;
                 }
 
@@ -297,5 +308,20 @@ public class MainActivity extends AppCompatActivity {
             countTextView.setText(String.valueOf(0));
         }
         setFilterAndSearch();
+    }
+
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        processExtraData();
+    }
+
+    private void processExtraData(){
+        Intent intent = getIntent();
+        //use the data received here
+        if (intent != null) {
+            if(intent.getExtras()!=null){
+                intentPosition = intent.getExtras().getInt("viewPagerPosition");
+            }
+        }
     }
 }

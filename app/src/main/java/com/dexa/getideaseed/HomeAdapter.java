@@ -1,7 +1,10 @@
 package com.dexa.getideaseed;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +55,33 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
     @Override public void onBindViewHolder(NumberViewHolder holder, final int position) {
         final ModelExplorer modelExplorer;
         modelExplorer = filteredArrayList.get(position);
-        holder.tvUserProjectName.setText(modelExplorer.getTitle());
-        holder.tvUserProjectDescription.setText(modelExplorer.getDescription());
+
+        SpannableString str = new SpannableString(modelExplorer.getTitle());
+        if(searchQuery !=null && searchQuery != ""){
+            String input = searchQuery;
+            int indexOfKeyword = str.toString().indexOf(input);
+            if(indexOfKeyword >=0 && indexOfKeyword < str.length()){
+                str.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+input.length(),0);
+            }
+            holder.tvUserProjectName.setText(str);
+        }
+        else {
+            holder.tvUserProjectName.setText((modelExplorer.getTitle()));
+        }
+
+        SpannableString string = new SpannableString(modelExplorer.getDescription());
+        if(searchQuery !=null && searchQuery != ""){
+            String query = searchQuery;
+            int indexOfKeyword = string.toString().indexOf(query);
+            if(indexOfKeyword >=0 && indexOfKeyword < string.length()){
+                string.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+query.length(),0);
+            }
+            holder.tvUserProjectDescription.setText(string);
+        }
+        else {
+            holder.tvUserProjectDescription.setText(modelExplorer.getDescription());
+        }
+
         holder.pbUserProjectOriginality.setProgress(modelExplorer.getOrginality());
         holder.pbUserProjectDifficulty.setProgress(modelExplorer.getDifficulty());
         holder.btUserProjectDelete.setOnClickListener(new View.OnClickListener() {
@@ -118,8 +146,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
     @Override public Filter getFilter() {
         return new Filter() {
             @Override protected FilterResults performFiltering(CharSequence constraint) {
-                searchQuery = constraint.toString();
-                searchQuery = searchQuery.trim();
+                if(constraint !=null){
+                    searchQuery = constraint.toString();
+                    searchQuery = searchQuery.trim();
+                }
+                else {
+                    searchQuery = "";
+                }
                 if(backupList.size() <= originalArrayList.size()){
                     backupList.clear();
                     backupList.addAll(originalArrayList);

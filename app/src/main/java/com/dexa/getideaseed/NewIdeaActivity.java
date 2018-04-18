@@ -357,9 +357,18 @@ public class NewIdeaActivity extends AppCompatActivity implements AdapterView.On
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
+                Intent intent = new Intent(context, MainActivity.class);
+                startActivity(intent);
                 finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override public void onBackPressed() {
+        Intent intent = new Intent(context, MainActivity.class);
+        startActivity(intent);
+        finish();
+        super.onBackPressed();
     }
 }

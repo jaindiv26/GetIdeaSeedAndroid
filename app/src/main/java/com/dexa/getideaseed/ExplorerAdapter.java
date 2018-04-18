@@ -3,6 +3,8 @@ package com.dexa.getideaseed;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,8 +56,32 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
         modelExplorer = filteredArrayList.get(position);
         holder.noOfBulbs = modelExplorer.getLightbulbs();
         holder.tvUserName.setText(modelExplorer.getUserName());
-        holder.tvProjectTitle.setText((modelExplorer.getTitle()));
-        holder.tvProjectDescription.setText(modelExplorer.getDescription());
+
+        SpannableString str = new SpannableString(modelExplorer.getTitle());
+        if(searchQuery !=null && searchQuery != ""){
+            String input = searchQuery;
+            int indexOfKeyword = str.toString().indexOf(input);
+            if(indexOfKeyword >=0 && indexOfKeyword < str.length()){
+                str.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+input.length(),0);
+            }
+            holder.tvProjectTitle.setText(str);
+        }
+        else {
+            holder.tvProjectTitle.setText((modelExplorer.getTitle()));
+        }
+
+        SpannableString string = new SpannableString(modelExplorer.getDescription());
+        if(searchQuery !=null && searchQuery != ""){
+            String query = searchQuery;
+            int indexOfKeyword = string.toString().indexOf(query);
+            if(indexOfKeyword >=0 && indexOfKeyword < string.length()){
+                string.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+query.length(),0);
+            }
+            holder.tvProjectDescription.setText(string);
+        }
+        else {
+            holder.tvProjectDescription.setText(modelExplorer.getDescription());
+        }
         holder.tvNoOfBulbs.setText(Integer.toString(modelExplorer.getLightbulbs()));
         holder.pbOriginality.setProgress(modelExplorer.getOrginality());
         holder.pbDifficulty.setProgress(modelExplorer.getDifficulty());
@@ -171,10 +197,9 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
 
                 }
 
-
                 if(searchQuery.length()>=2) {
                     for (ModelExplorer modelExplorer : originalArrayList) {
-                        if (modelExplorer.getTitle().toLowerCase().contains(searchQuery)  || modelExplorer.getDescription().toLowerCase().contains(searchQuery.toLowerCase())) {
+                        if (modelExplorer.getTitle().toLowerCase().contains(searchQuery.toLowerCase())  || modelExplorer.getDescription().toLowerCase().contains(searchQuery.toLowerCase())) {
                             filteredList.add(modelExplorer);
                         }
                     }

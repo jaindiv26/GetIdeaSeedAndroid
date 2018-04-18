@@ -53,12 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         context = LoginActivity.this;
         initComponents();
-
-
-        if (PrefManager.getInstance().getBoolean("loggedIn")) {
+        if (PrefManager.getInstance().getBoolean("loggedIn")){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         }
+        buildShortcut();
     }
 
     public void initComponents() {
@@ -81,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                 loginButton.setVisibility(View.VISIBLE);
                 signUpButton.setVisibility(View.VISIBLE);
                 tvLogin.setText("Log In");
-                loginButton.setText("Login In");
+                loginButton.setText("Log In");
                 FLAG = 0;
             }
             if (getIntent().hasExtra("showRegisterView")) {
@@ -209,6 +208,18 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void buildShortcut(){
+            if(PrefManager.getInstance().getBoolean("loggedIn")){
+                AppShortcutUtil appShortcutUtil = new AppShortcutUtil();
+                appShortcutUtil.changeShortcutOnLoggedIn(context);
+            }
+
+            else {
+                AppShortcutUtil appShortcutUtil = new AppShortcutUtil();
+                appShortcutUtil.changeShortcutOnSignedOut(context);
+            }
+    }
+
     public static boolean isInternetOn(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -265,6 +276,7 @@ public class LoginActivity extends AppCompatActivity {
                         PrefManager.getInstance().setBoolean("loggedIn", true);
                         PrefManager.getInstance().setString("username", modelLoginData.getModelUser().getUserName());
                         PrefManager.getInstance().setString("userID", modelLoginData.getModelUser().getUserId());
+                        buildShortcut();
                         finish();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -324,6 +336,7 @@ public class LoginActivity extends AppCompatActivity {
                             .putCustomAttribute("email", email.getText().toString().trim()));
                     PrefManager.getInstance().setBoolean("loggedIn", true);
                     PrefManager.getInstance().setString("username", userName.getText().toString());
+                    buildShortcut();
                     finish();
                 }
             }
@@ -386,7 +399,7 @@ public class LoginActivity extends AppCompatActivity {
                     loginButton.setVisibility(View.VISIBLE);
                     signUpButton.setVisibility(View.VISIBLE);
                     tvLogin.setText("Log In");
-                    loginButton.setText("Login In");
+                    loginButton.setText("Log In");
                     if (isGuestLoggedIn) {
                         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                     } else {
@@ -423,7 +436,7 @@ public class LoginActivity extends AppCompatActivity {
             loginButton.setVisibility(View.VISIBLE);
             signUpButton.setVisibility(View.VISIBLE);
             tvLogin.setText("Log In");
-            loginButton.setText("Login In");
+            loginButton.setText("Log In");
             FLAG = 0;
         } else if (FLAG == 0) {
             finish();
