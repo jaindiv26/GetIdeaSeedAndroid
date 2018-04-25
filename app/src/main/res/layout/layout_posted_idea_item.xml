@@ -43,6 +43,7 @@
                 android:layout_marginTop="-16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
+                android:paddingRight="16dp"
                 />
 
             <TextView
@@ -77,7 +78,7 @@
                 android:layout_below="@id/tvUserProjectDescription"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 />
 
             <ProgressBar
@@ -110,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/pbUserProjectOriginality"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="16dp"
                 />
@@ -148,6 +149,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="16dp"
                 android:button="@drawable/bg_checkbox"
+                android:textSize="16sp"
                 />
 
             <Button
@@ -191,7 +193,7 @@
                 android:textSize="14dp"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_margin="16dp"
                 />
 

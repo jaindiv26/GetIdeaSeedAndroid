@@ -2,20 +2,16 @@ package com.dexa.getideaseed;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 
@@ -30,7 +26,7 @@ import java.util.HashMap;
  * Created by Dev on 20/01/18.
  */
 
-public class ExplorerFragment extends Fragment{
+public class ExplorerFragment extends BaseFragment{
 
     private Context context;
     private RecyclerView recyclerView;
@@ -103,18 +99,21 @@ public class ExplorerFragment extends Fragment{
 
             }
 
-            @Override public void onResultFound(boolean result) {
-                if(result){
-                    relativeLayout.setVisibility(View.VISIBLE);
-                }
-                else {
-                    relativeLayout.setVisibility(View.GONE);
+            @Override public void onNoResultFound(boolean result,boolean backUpListIsEmpty) {
+                if(!backUpListIsEmpty){
+                    if(result){
+                        relativeLayout.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        relativeLayout.setVisibility(View.GONE);
+                    }
                 }
             }
 
-            @Override public void onLightBulbClicked(ModelExplorer modelExplorer, int numberOfBulbs) {
-
-                lightBulbButton(modelExplorer,numberOfBulbs);
+            @Override public void onLightBulbClicked(ModelExplorer modelExplorer) {
+                if(isInternetOn(context)){
+                    lightBulbButton(modelExplorer);
+                }
             }
 
         };
@@ -131,6 +130,7 @@ public class ExplorerFragment extends Fragment{
         explorerAdapter = new ExplorerAdapter(context, explorerServerArrayList,clickListener);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(explorerAdapter);
+        mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context,R.color.lightGreen));
     }
 
     @Override public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -224,24 +224,6 @@ public class ExplorerFragment extends Fragment{
 
     }
 
-    public static boolean isInternetOn(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        // test for connection
-        if (cm.getActiveNetworkInfo() != null
-                && cm.getActiveNetworkInfo().isAvailable()
-                && cm.getActiveNetworkInfo().isConnected()) {
-            Log.v("log", "Internet is working");
-            // txt_status.setText("Internet is working");
-            return true;
-        } else {
-            Log.v("log", "No internet access");
-            Toast.makeText(context,"No internet access",
-                    Toast.LENGTH_SHORT).show();
-            return false;
-        }
-    }
-
     public void explorerFragmentSearch(String query,HashMap<String,String> hashMap){
         searchQuery = query;
         hashMapFilterApplied =hashMap;
@@ -249,7 +231,7 @@ public class ExplorerFragment extends Fragment{
         explorerAdapter.getData(hashMap);
     }
 
-    private void lightBulbButton(final ModelExplorer modelExplorer, final int numberOfBulbs){
+    private void lightBulbButton(final ModelExplorer modelExplorer){
         apiManagerListener = new ApiManagerListener() {
             @Override public void onSuccess(String response) {
                 if (response != null) {
@@ -263,7 +245,6 @@ public class ExplorerFragment extends Fragment{
                         else {
                             modelExplorer.setHasLiked(false);
                         }
-                        modelExplorer.setLightbulbs(numberOfBulbs);
                     }
                     catch (JSONException e){
                         e.printStackTrace();
@@ -277,13 +258,17 @@ public class ExplorerFragment extends Fragment{
             }
         };
         String url = "https://www.getideaseed.com/api/idea/lightbulb";
-
         HashMap<String,String> hashMap = new HashMap<>();
         hashMap.put("ideaId",modelExplorer.getUniqueId());
         hashMap.put("ideaName",modelExplorer.getTitle());
         hashMap.put("lightbulbGiverId",PrefManager.getInstance().getString("userID"));
         hashMap.put("lightbulbReceiverId",modelExplorer.getUserID());
-        hashMap.put("lightbulbs", String.valueOf(numberOfBulbs));
+        if(modelExplorer.isHasLiked()){
+            hashMap.put("lightbulbs", String.valueOf(modelExplorer.getLightbulbs()));
+        }
+        else {
+            hashMap.put("lightbulbs", String.valueOf(modelExplorer.getLightbulbs()+ 1));
+        }
         ApiManager apiManager = new ApiManager(apiManagerListener);
         apiManager.postRequest(context,url,hashMap);
     }

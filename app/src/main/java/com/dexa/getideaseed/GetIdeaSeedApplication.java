@@ -22,5 +22,4 @@ public class GetIdeaSeedApplication extends Application {
     public static Context getContext(){
         return application;
     }
-
 }

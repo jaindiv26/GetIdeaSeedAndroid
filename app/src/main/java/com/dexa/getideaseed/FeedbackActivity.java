@@ -2,12 +2,14 @@ package com.dexa.getideaseed;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -52,19 +54,14 @@ public class FeedbackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_feedback);
         context = FeedbackActivity.this;
         initComponents();
-        if (getIntent() != null) {
-            modelExplorer = getIntent().getParcelableExtra("feedbackUserData");
-            tvIdeaUsername.setText(modelExplorer.getUserName());
-            tvIdeaTitle.setText(modelExplorer.getTitle());
-            tvIdeaDescription.setText(modelExplorer.getDescription());
-            pbOriginality.setProgress(modelExplorer.getOrginality());
-            pbDifficulty.setProgress(modelExplorer.getDifficulty());
-            tvNoOfBulbs.setText(Integer.toString(modelExplorer.getLightbulbs()));
-            uniqueID = modelExplorer.getUniqueId();
-            tvOriginalityProgress.setText(String.valueOf(modelExplorer.getOrginality()));
-            tvDifficultyProgress.setText(String.valueOf(modelExplorer.getDifficulty()));
+        setInitComponentsFromIntent();
+        if(isInternetOn(context)){
+            fetchData();
         }
-        fetchData();
+        else{
+            Toast.makeText(context,
+                    "No Internet Connection", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void initComponents(){
@@ -90,34 +87,13 @@ public class FeedbackActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 }
                 else {
-                    apiManagerListener = new ApiManagerListener() {
-                        @Override public void onSuccess(String response) {
-                            try {
-                                JSONObject jsonObject = new JSONObject(response);
-                                modelFeedbackArrayList.add(modelFeedbackGuestUser(jsonObject));
-                                feedbackAdapter.notifyItemInserted(modelFeedbackArrayList.size()-1);
-                                etGuestComment.setText("");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override public void onError(VolleyError error) {
-                            int a = 5;
-                        }
-
-                        @Override public void statusCode(int statusCode) {
-                            int a = 8;
-                        }
-                    };
-                    String url = "https://www.getideaseed.com/api/idea/feedback";
-                    HashMap<String,String> hashMap = new HashMap<>();
-                        hashMap.put("message", etGuestComment.getText().toString());
-                        hashMap.put("from",tvGuestUsername.getText().toString());
-                        hashMap.put("fromUserId",PrefManager.getInstance().getString("userID"));
-                        hashMap.put("ideaId",uniqueID);
-                    ApiManager apiManager = new ApiManager(apiManagerListener);
-                    apiManager.postRequest(context,url,hashMap);
+                    if(isInternetOn(context)){
+                        postComment();
+                    }
+                    else{
+                        Toast.makeText(context,
+                                "No Internet Connection", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -135,15 +111,21 @@ public class FeedbackActivity extends AppCompatActivity {
                     }
                 }
                 else {
-                    editComment(modelFeedback,comment);
+                    if(isInternetOn(context)){
+                        editComment(modelFeedback,comment);
+                    }
+                    else{
+                        Toast.makeText(context,
+                                "No Internet Connection", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
-            @Override public void onResultFound(boolean result) {
+            @Override public void onNoResultFound(boolean result,boolean backUpListIsEmpty) {
 
             }
 
-            @Override public void onLightBulbClicked(ModelExplorer modelExplorer, int numberOfBulbs) {
+            @Override public void onLightBulbClicked(ModelExplorer modelExplorer) {
 
             }
         };
@@ -190,6 +172,37 @@ public class FeedbackActivity extends AppCompatActivity {
         apiManager.getRequest(context,url);
     }
 
+    private void postComment(){
+        apiManagerListener = new ApiManagerListener() {
+            @Override public void onSuccess(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    modelFeedbackArrayList.add(modelFeedbackGuestUser(jsonObject));
+                    feedbackAdapter.notifyItemInserted(modelFeedbackArrayList.size()-1);
+                    etGuestComment.setText("");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override public void onError(VolleyError error) {
+                int a = 5;
+            }
+
+            @Override public void statusCode(int statusCode) {
+                int a = 8;
+            }
+        };
+        String url = "https://www.getideaseed.com/api/idea/feedback";
+        HashMap<String,String> hashMap = new HashMap<>();
+        hashMap.put("message", etGuestComment.getText().toString());
+        hashMap.put("from",tvGuestUsername.getText().toString());
+        hashMap.put("fromUserId",PrefManager.getInstance().getString("userID"));
+        hashMap.put("ideaId",uniqueID);
+        ApiManager apiManager = new ApiManager(apiManagerListener);
+        apiManager.postRequest(context,url,hashMap);
+    }
+
     private ModelFeedback modelFeedbackGuestUser (JSONObject js) {
         ModelFeedback modelFeedback = new ModelFeedback();
         modelFeedback.setFeedbackId(js.optString("_id"));
@@ -201,12 +214,7 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     public void editComment(final ModelFeedback modelFeedback, final String comment){
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Loading..."); // Setting Message
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
-        progressDialog.show(); // Display Progress Dialog
-        progressDialog.setCancelable(false);
-
+        showLoader();
         apiManagerListener = new ApiManagerListener() {
             @Override public void onSuccess(String response) {
                 progressDialog.dismiss();
@@ -249,4 +257,42 @@ public class FeedbackActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void showLoader(){
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Loading..."); // Setting Message
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialog.show(); // Display Progress Dialog
+        progressDialog.setCancelable(false);
+    }
+
+    private void setInitComponentsFromIntent(){
+        if (getIntent() != null) {
+            modelExplorer = getIntent().getParcelableExtra("feedbackUserData");
+            tvIdeaUsername.setText(modelExplorer.getUserName());
+            tvIdeaTitle.setText(modelExplorer.getTitle());
+            tvIdeaDescription.setText(modelExplorer.getDescription());
+            pbOriginality.setProgress(modelExplorer.getOrginality());
+            pbDifficulty.setProgress(modelExplorer.getDifficulty());
+            tvNoOfBulbs.setText(Integer.toString(modelExplorer.getLightbulbs()));
+            uniqueID = modelExplorer.getUniqueId();
+            tvOriginalityProgress.setText(String.valueOf(modelExplorer.getOrginality()));
+            tvDifficultyProgress.setText(String.valueOf(modelExplorer.getDifficulty()));
+        }
+    }
+
+    public static boolean isInternetOn(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        // test for connection
+        if (cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            Log.v("log", "Internet is working");
+            // txt_status.setText("Internet is working");
+            return true;
+        } else {
+            Log.v("log", "No internet access");
+            return false;
+        }
+    }
 }

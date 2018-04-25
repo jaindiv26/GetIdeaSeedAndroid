@@ -55,33 +55,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
     @Override public void onBindViewHolder(NumberViewHolder holder, final int position) {
         final ModelExplorer modelExplorer;
         modelExplorer = filteredArrayList.get(position);
-
-        SpannableString str = new SpannableString(modelExplorer.getTitle());
-        if(searchQuery !=null && searchQuery != ""){
-            String input = searchQuery;
-            int indexOfKeyword = str.toString().indexOf(input);
-            if(indexOfKeyword >=0 && indexOfKeyword < str.length()){
-                str.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+input.length(),0);
-            }
-            holder.tvUserProjectName.setText(str);
-        }
-        else {
-            holder.tvUserProjectName.setText((modelExplorer.getTitle()));
-        }
-
-        SpannableString string = new SpannableString(modelExplorer.getDescription());
-        if(searchQuery !=null && searchQuery != ""){
-            String query = searchQuery;
-            int indexOfKeyword = string.toString().indexOf(query);
-            if(indexOfKeyword >=0 && indexOfKeyword < string.length()){
-                string.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+query.length(),0);
-            }
-            holder.tvUserProjectDescription.setText(string);
-        }
-        else {
-            holder.tvUserProjectDescription.setText(modelExplorer.getDescription());
-        }
-
+        highLightSearchQuery(holder,modelExplorer);
         holder.pbUserProjectOriginality.setProgress(modelExplorer.getOrginality());
         holder.pbUserProjectDifficulty.setProgress(modelExplorer.getDifficulty());
         holder.btUserProjectDelete.setOnClickListener(new View.OnClickListener() {
@@ -106,17 +80,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
             }
         });
 
-        int progress = modelExplorer.getProgress();
-        if(progress == 1){
-            holder.ivIdeaProgress.setImageResource(R.drawable.just_planted_lightbulb_img);
-        }
-        if(progress == 2){
-            holder.ivIdeaProgress.setImageResource(R.drawable.in_progress_lightbulb_img);
-        }
-        if(progress == 3){
-            holder.ivIdeaProgress.setImageResource(R.drawable.finnished_project_img);
-        }
-
+        setLightBulbImage(holder,modelExplorer);
         holder.cbUserProjectVisibility.setClickable(false);
         holder.tvIdeaOriginality.setText(String.valueOf(modelExplorer.getOrginality()));
         holder.tvIdeaDifficulty.setText(String .valueOf(modelExplorer.getDifficulty()));
@@ -127,7 +91,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
         else {
             holder.cbUserProjectVisibility.setChecked(true);
             holder.cbUserProjectVisibility.setText("  Public");
-
         }
     }
 
@@ -230,8 +193,22 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
                                 lightBulbCount = modelExplorer.getLightbulbs();
                             }
                             if(modelExplorer.getDifficulty()==difficultyCount && modelExplorer.getProgress()==progressCount
-                                    && modelExplorer.getOrginality()==originalityCount && modelExplorer.getLightbulbs()==lightBulbCount){
+                                    && modelExplorer.getOrginality()==originalityCount){
                                 filteredList.add(modelExplorer);
+                            }
+                            if(lightBulbCount==1 && modelExplorer.getLightbulbs()>10){
+                                filteredList.remove(modelExplorer);
+                            }
+                            if(lightBulbCount==2){
+                                if(modelExplorer.getLightbulbs()>=30){
+                                    filteredList.remove(modelExplorer);
+                                }
+                                if(modelExplorer.getLightbulbs()<=10){
+                                    filteredList.remove(modelExplorer);
+                                }
+                            }
+                            if(lightBulbCount==3 && modelExplorer.getLightbulbs()<30){
+                                filteredList.remove(modelExplorer);
                             }
                         }
                     }
@@ -278,5 +255,46 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.NumberViewHold
 
     public void setFilterHashMap(HashMap<String,String> hashMap){
         this.hashMap = hashMap;
+    }
+
+    private void highLightSearchQuery(NumberViewHolder holder,ModelExplorer modelExplorer){
+        SpannableString str = new SpannableString(modelExplorer.getTitle());
+        if(searchQuery !=null && searchQuery != ""){
+            String input = searchQuery;
+            int indexOfKeyword = str.toString().indexOf(input);
+            if(indexOfKeyword >=0 && indexOfKeyword < str.length()){
+                str.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+input.length(),0);
+            }
+            holder.tvUserProjectName.setText(str);
+        }
+        else {
+            holder.tvUserProjectName.setText((modelExplorer.getTitle()));
+        }
+
+        SpannableString string = new SpannableString(modelExplorer.getDescription());
+        if(searchQuery !=null && searchQuery != ""){
+            String query = searchQuery;
+            int indexOfKeyword = string.toString().indexOf(query);
+            if(indexOfKeyword >=0 && indexOfKeyword < string.length()){
+                string.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+query.length(),0);
+            }
+            holder.tvUserProjectDescription.setText(string);
+        }
+        else {
+            holder.tvUserProjectDescription.setText(modelExplorer.getDescription());
+        }
+    }
+
+    private void setLightBulbImage(NumberViewHolder holder,ModelExplorer modelExplorer){
+        int progress = modelExplorer.getProgress();
+        if(progress == 1){
+            holder.ivIdeaProgress.setImageResource(R.drawable.just_planted_lightbulb_img);
+        }
+        if(progress == 2){
+            holder.ivIdeaProgress.setImageResource(R.drawable.in_progress_lightbulb_img);
+        }
+        if(progress == 3){
+            holder.ivIdeaProgress.setImageResource(R.drawable.finnished_project_img);
+        }
     }
 }

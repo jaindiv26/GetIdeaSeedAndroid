@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Created by Dev on 10/02/18.
  */
 
-public class ModelExplorer implements Parcelable {
+public class ModelExplorer implements Parcelable{
 
     private String uniqueId;
     private String title;

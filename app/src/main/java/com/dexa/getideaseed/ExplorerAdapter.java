@@ -1,6 +1,7 @@
 package com.dexa.getideaseed;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -9,11 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,33 +60,14 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
         modelExplorer = filteredArrayList.get(position);
         holder.noOfBulbs = modelExplorer.getLightbulbs();
         holder.tvUserName.setText(modelExplorer.getUserName());
-
-        SpannableString str = new SpannableString(modelExplorer.getTitle());
-        if(searchQuery !=null && searchQuery != ""){
-            String input = searchQuery;
-            int indexOfKeyword = str.toString().indexOf(input);
-            if(indexOfKeyword >=0 && indexOfKeyword < str.length()){
-                str.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+input.length(),0);
-            }
-            holder.tvProjectTitle.setText(str);
-        }
-        else {
-            holder.tvProjectTitle.setText((modelExplorer.getTitle()));
-        }
-
-        SpannableString string = new SpannableString(modelExplorer.getDescription());
-        if(searchQuery !=null && searchQuery != ""){
-            String query = searchQuery;
-            int indexOfKeyword = string.toString().indexOf(query);
-            if(indexOfKeyword >=0 && indexOfKeyword < string.length()){
-                string.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+query.length(),0);
-            }
-            holder.tvProjectDescription.setText(string);
-        }
-        else {
-            holder.tvProjectDescription.setText(modelExplorer.getDescription());
-        }
+        highLightSearchQuery(holder,modelExplorer);
         holder.tvNoOfBulbs.setText(Integer.toString(modelExplorer.getLightbulbs()));
+        if(modelExplorer.getLightbulbs()>=0){
+            holder.tvNoOfBulbs.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.tvNoOfBulbs.setVisibility(View.INVISIBLE);
+        }
         holder.pbOriginality.setProgress(modelExplorer.getOrginality());
         holder.pbDifficulty.setProgress(modelExplorer.getDifficulty());
         holder.feedBackButton.setOnClickListener(new View.OnClickListener() {
@@ -92,21 +77,38 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
                 }
             }
         });
-        holder.ivLightBulbClickListener.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
+        holder.cbLightBulbClickListener.setOnCheckedChangeListener(null);
+        if(modelExplorer.isHasLiked()){
+            holder.cbLightBulbClickListener.setChecked(true);
+            holder.ivLightBulbLiked.setImageResource(R.drawable.likebulb_selected);
+        }
+        else {
+            holder.cbLightBulbClickListener.setChecked(false);
+            holder.ivLightBulbLiked.setImageResource(R.drawable.likebulb_unselected);
+        }
+
+        holder.cbLightBulbClickListener.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(PrefManager.getInstance().getBoolean("loggedIn")){
-                    if(modelExplorer.isHasLiked()){
-                        holder.noOfBulbs = holder.noOfBulbs - 1;
-                        holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
-                        holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_unselected));
+                    if(isInternetOn(context)){
+                        if(isChecked){
+                            holder.noOfBulbs = holder.noOfBulbs + 1;
+                            holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
+                            holder.ivLightBulbLiked.setImageResource(R.drawable.likebulb_selected);
+                        }
+                        else {
+                            holder.noOfBulbs = holder.noOfBulbs - 1;
+                            holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
+                            holder.ivLightBulbLiked.setImageResource(R.drawable.likebulb_unselected);
+                        }
+
+                        if (clickListener != null) {
+                            clickListener.onLightBulbClicked(modelExplorer);
+                        }
                     }
-                    else{
-                        holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_selected));
-                        holder.noOfBulbs = holder.noOfBulbs + 1;
-                        holder.tvNoOfBulbs.setText(String.valueOf(holder.noOfBulbs));
-                    }
-                    if (clickListener != null) {
-                        clickListener.onLightBulbClicked(modelExplorer,modelExplorer.getLightbulbs());
+                    else {
+                        Toast.makeText(context,
+                                "No Internet Connection", Toast.LENGTH_LONG).show();
                     }
                 }
                 else {
@@ -117,14 +119,6 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
         });
         holder.tvProgressOriginality.setText(String.valueOf(modelExplorer.getOrginality()));
         holder.tvProgressDifficulty.setText(String.valueOf(modelExplorer.getDifficulty()));
-
-        if(modelExplorer.isHasLiked()){
-            holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_selected));
-        }
-        else if(!modelExplorer.isHasLiked()){
-            holder.ivLightBulbClickListener.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.likebulb_unselected));
-        }
-
         int progress = modelExplorer.getProgress();
         if (progress == 1) {
             holder.ivProjectProgress.setImageResource(R.drawable.just_planted_lightbulb_img);
@@ -236,8 +230,22 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
                                 lightBulbCount = modelExplorer.getLightbulbs();
                             }
                             if(modelExplorer.getDifficulty()==difficultyCount && modelExplorer.getProgress()==progressCount
-                                    && modelExplorer.getOrginality()==originalityCount && modelExplorer.getLightbulbs()==lightBulbCount){
+                                    && modelExplorer.getOrginality()==originalityCount){
                                 filteredList.add(modelExplorer);
+                            }
+                            if(lightBulbCount==1 && modelExplorer.getLightbulbs()>10){
+                                filteredList.remove(modelExplorer);
+                            }
+                            if(lightBulbCount==2){
+                                if(modelExplorer.getLightbulbs()>=30){
+                                    filteredList.remove(modelExplorer);
+                                }
+                                if(modelExplorer.getLightbulbs()<=10){
+                                    filteredList.remove(modelExplorer);
+                                }
+                            }
+                            if(lightBulbCount==3 && modelExplorer.getLightbulbs()<30){
+                                filteredList.remove(modelExplorer);
                             }
                         }
                     }
@@ -253,7 +261,7 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
                     filteredArrayList.addAll((ArrayList<ModelExplorer>) results.values);
                 }
                 if(clickListener != null){
-                    clickListener.onResultFound(filteredArrayList.isEmpty());
+                    clickListener.onNoResultFound(filteredArrayList.isEmpty(),backupList.isEmpty());
                 }
                 notifyDataSetChanged();
             }
@@ -265,7 +273,8 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
         private TextView tvUserName, tvProjectTitle, tvProjectDescription, tvNoOfBulbs,tvProgressOriginality,tvProgressDifficulty;
         private ProgressBar pbOriginality, pbDifficulty;
         private Button feedBackButton;
-        private ImageView ivProjectProgress, ivLightBulbClickListener;
+        private ImageView ivProjectProgress, ivLightBulbLiked;
+        private CheckBox cbLightBulbClickListener;
         private int noOfBulbs = 0;
 
         public NumberViewHolder(View itemView) {
@@ -278,13 +287,55 @@ public class ExplorerAdapter extends RecyclerView.Adapter<ExplorerAdapter.Number
             pbDifficulty = itemView.findViewById(R.id.pbDifficulty);
             feedBackButton = itemView.findViewById(R.id.btFeedback);
             ivProjectProgress = itemView.findViewById(R.id.ivWorkProgress);
-            ivLightBulbClickListener = itemView.findViewById(R.id.ivLightBulbLiked);
+            cbLightBulbClickListener = itemView.findViewById(R.id.cbLightBulbLiked);
             tvProgressOriginality = itemView.findViewById(R.id.tvProgressOriginality);
             tvProgressDifficulty = itemView.findViewById(R.id.tvProgressDifficulty);
+            ivLightBulbLiked = itemView.findViewById(R.id.ivLightBulbLiked);
         }
     }
 
     public void getData(HashMap<String,String> hashMap){
         this.hashMap = hashMap;
+    }
+
+    private void highLightSearchQuery(final NumberViewHolder holder,ModelExplorer modelExplorer){
+        SpannableString str = new SpannableString(modelExplorer.getTitle());
+        if(searchQuery !=null && searchQuery != ""){
+            String input = searchQuery;
+            int indexOfKeyword = str.toString().indexOf(input);
+            if(indexOfKeyword >=0 && indexOfKeyword < str.length()){
+                str.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+input.length(),0);
+            }
+            holder.tvProjectTitle.setText(str);
+        }
+        else {
+            holder.tvProjectTitle.setText((modelExplorer.getTitle()));
+        }
+
+        SpannableString string = new SpannableString(modelExplorer.getDescription());
+        if(searchQuery !=null && searchQuery != ""){
+            String query = searchQuery;
+            int indexOfKeyword = string.toString().indexOf(query);
+            if(indexOfKeyword >=0 && indexOfKeyword < string.length()){
+                string.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context,R.color.colorPrimary)),indexOfKeyword, indexOfKeyword+query.length(),0);
+            }
+            holder.tvProjectDescription.setText(string);
+        }
+        else {
+            holder.tvProjectDescription.setText(modelExplorer.getDescription());
+        }
+    }
+
+    public static boolean isInternetOn(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        // test for connection
+        if (cm.getActiveNetworkInfo() != null
+                && cm.getActiveNetworkInfo().isAvailable()
+                && cm.getActiveNetworkInfo().isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

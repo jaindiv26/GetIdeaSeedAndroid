@@ -72,31 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         email.setVisibility(View.GONE);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
-
-        if (getIntent() != null) {
-            if (getIntent().hasExtra("showLoginView")) {
-                isGuestLoggedIn = getIntent().getBooleanExtra("showLoginView", false);
-                email.setVisibility(View.GONE);
-                loginButton.setVisibility(View.VISIBLE);
-                signUpButton.setVisibility(View.VISIBLE);
-                tvLogin.setText("Log In");
-                loginButton.setText("Log In");
-                FLAG = 0;
-            }
-            if (getIntent().hasExtra("showRegisterView")) {
-                isGuestLoggedIn = getIntent().getBooleanExtra("showRegisterView", false);
-                email.setVisibility(View.VISIBLE);
-                signUpButton.setVisibility(View.INVISIBLE);
-                loginButton.setText("Sign Up");
-                tvLogin.setText("Sign Up");
-                FLAG = 0;
-            }
-            if (isGuestLoggedIn) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            } else {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            }
-        }
+        setInitComponentsFromIntent();
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
@@ -213,7 +189,6 @@ public class LoginActivity extends AppCompatActivity {
                 AppShortcutUtil appShortcutUtil = new AppShortcutUtil();
                 appShortcutUtil.changeShortcutOnLoggedIn(context);
             }
-
             else {
                 AppShortcutUtil appShortcutUtil = new AppShortcutUtil();
                 appShortcutUtil.changeShortcutOnSignedOut(context);
@@ -251,12 +226,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void fetchData() {
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Loading..."); // Setting Message
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
-        progressDialog.show(); // Display Progress Dialog
-        progressDialog.setCancelable(false);
-
+        showLoader();
         apiManagerListener = new ApiManagerListener() {
             @Override public void onSuccess(String response) {
                 if (!response.equals(null)) {
@@ -308,22 +278,15 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         String url = "https://www.getideaseed.com/api/login";
-
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("username", userName.getText().toString().trim());
         hashMap.put("password", password.getText().toString().trim());
-
         ApiManager apiManager = new ApiManager(apiManagerListener);
         apiManager.postRequest(context, url, hashMap);
     }
 
     public void signUpFetchData() {
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage("Loading..."); // Setting Message
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
-        progressDialog.show(); // Display Progress Dialog
-        progressDialog.setCancelable(false);
-
+       showLoader();
         apiManagerListener = new ApiManagerListener() {
             @Override public void onSuccess(String response) {
                 if (!response.equals(null)) {
@@ -343,34 +306,30 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override public void onError(VolleyError error) {
                 progressDialog.dismiss();
+                String response;
                 if (error instanceof NoConnectionError) {
                     Toast.makeText(context,
                             "No Internet access", Toast.LENGTH_LONG).show();
                 } else {
                     try {
-                        String response = new String(error.networkResponse.data, "utf-8");
-
+                        response = new String(error.networkResponse.data, "utf-8");
                         if (TextUtils.isEmpty(response)) {
                             Toast.makeText(context, "Something went bad", Toast.LENGTH_LONG).show();
-                        } else {
+                        }
+                        if(response.equals("A user with the given username is already registered")){
                             Toast.makeText(context, response, Toast.LENGTH_LONG).show();
                         }
-
+                        if(response.equals("InvalidParameterValue: Missing final '@domain'")){
+                            Toast.makeText(context,"Please enter a valid E-mail ID", Toast.LENGTH_LONG).show();
+                        }
                     } catch (Exception e) {
                         Toast.makeText(context,
                                 "Something went bad", Toast.LENGTH_LONG).show();
                     }
-
                 }
-
             }
 
             @Override public void statusCode(int statusCode) {
-                if (statusCode == 403) {
-                    Toast.makeText(context,
-                            "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();
-                }
-
             }
         };
 
@@ -441,6 +400,42 @@ public class LoginActivity extends AppCompatActivity {
         } else if (FLAG == 0) {
             finish();
             super.onBackPressed();
+        }
+    }
+
+    private void showLoader(){
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Loading..."); // Setting Message
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // Progress Dialog Style Spinner
+        progressDialog.show(); // Display Progress Dialog
+        progressDialog.setCancelable(false);
+
+    }
+
+    private void setInitComponentsFromIntent(){
+        if (getIntent() != null) {
+            if (getIntent().hasExtra("showLoginView")) {
+                isGuestLoggedIn = getIntent().getBooleanExtra("showLoginView", false);
+                email.setVisibility(View.GONE);
+                loginButton.setVisibility(View.VISIBLE);
+                signUpButton.setVisibility(View.VISIBLE);
+                tvLogin.setText("Log In");
+                loginButton.setText("Log In");
+                FLAG = 0;
+            }
+            if (getIntent().hasExtra("showRegisterView")) {
+                isGuestLoggedIn = getIntent().getBooleanExtra("showRegisterView", false);
+                email.setVisibility(View.VISIBLE);
+                signUpButton.setVisibility(View.INVISIBLE);
+                loginButton.setText("Sign Up");
+                tvLogin.setText("Sign Up");
+                FLAG = 1;
+            }
+            if (isGuestLoggedIn) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            } else {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            }
         }
     }
 }

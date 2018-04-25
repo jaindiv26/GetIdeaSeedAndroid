@@ -31,9 +31,8 @@
             android:layout_toRightOf="@id/btCloseButton"
             android:layout_centerVertical="true"
             android:text="Title"
-            android:textSize="20dp"
+            android:textSize="18dp"
             android:textColor="@color/black"
-            android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
             />
@@ -81,7 +80,7 @@
                     android:prompt="@string/difficulty"
                     android:theme="@style/ThemeOverlay.AppCompat.Light"
                     android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:paddingBottom="8dp"
                     >
 
@@ -122,7 +121,7 @@
                     android:prompt="@string/originality"
                     android:theme="@style/ThemeOverlay.AppCompat.Light"
                     android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:paddingBottom="8dp"
                     >
 
@@ -175,7 +174,7 @@
                     android:prompt="@string/progress"
                     android:theme="@style/ThemeOverlay.AppCompat.Light"
                     android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:paddingBottom="8dp"
                     >
 
@@ -215,7 +214,7 @@
                     android:prompt="@string/lightBulbs"
                     android:theme="@style/ThemeOverlay.AppCompat.Light"
                     android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
+                    android:paddingRight="8dp"
                     android:paddingBottom="8dp"
                     >
 
@@ -240,7 +239,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:layout_centerInParent="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         />
 
     <Button
