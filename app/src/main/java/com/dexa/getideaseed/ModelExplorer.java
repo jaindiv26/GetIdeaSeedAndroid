@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Created by Dev on 10/02/18.
  */
 
-public class ModelExplorer implements Parcelable {
+public class ModelExplorer implements Parcelable{
 
     private String uniqueId;
     private String title;
@@ -19,6 +19,7 @@ public class ModelExplorer implements Parcelable {
     private ArrayList<String> isLightbulbedBy;
     private Boolean isPrivate,isPublic;
     private int lightbulbs,orginality,progress,difficulty;
+    private boolean hasLiked;
 
     public ModelExplorer() {
     }
@@ -147,6 +148,14 @@ public class ModelExplorer implements Parcelable {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public boolean isHasLiked() {
+        return hasLiked;
+    }
+
+    public void setHasLiked(boolean hasLiked) {
+        this.hasLiked = hasLiked;
     }
 
     @Override public int describeContents() {

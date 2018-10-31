@@ -56,6 +56,10 @@ public class PrefManager {
         editor.apply();
     }
 
+    public SharedPreferences getPrefs() {
+        return sharedPreferences;
+    }
+
 
 
 }

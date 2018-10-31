@@ -6,19 +6,24 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_lightbulb_outline_black_24dp"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:hardwareAccelerated="true"
         android:theme="@style/AppTheme"
         android:name=".GetIdeaSeedApplication">
-        <activity android:name=".MainActivity"> </activity>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan"
+            />
 
         <activity
             android:name=".LoginActivity"
             android:theme="@style/LoginTheme"
+            android:windowSoftInputMode="stateHidden"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -27,14 +32,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".NewIdeaActivity"> </activity>
-        <activity android:name=".SignUpActivity" android:theme="@style/LoginTheme" ></activity>
-        <activity android:name=".FeedbackActivity"></activity>
+        <activity android:name=".NewIdeaActivity"/>
+        <activity android:name=".FeedbackActivity"/>
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts"/>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c6dbd9f7a043b0cb84983e4d98c8fbdcc6dc76be" />
     </application>
 
 </manifest>

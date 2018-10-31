@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:orientation="vertical"
+    android:background="@color/lightGrey"
     >
 
     <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        app:theme="@style/ThemeOverlay.AppCompat"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat"
         app:titleTextColor="@color/white"
         app:title="What's your idea?"
+        android:elevation="2dp"
         />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/lightGrey"
-        android:layout_below="@id/toolbar"
         >
 
         <RelativeLayout
@@ -36,12 +37,12 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
                 android:text="Title"
                 android:textSize="16dp"
-                android:textColor="@color/black"
+                android:textColor="@color/darkGrey"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 />
 
             <EditText
@@ -49,13 +50,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tvTitle"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:background="@color/white"
-                android:hint="Title"
+                android:background="@drawable/bg_rounded_edittext"
                 android:textSize="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:padding="8dp"
+                android:singleLine="true"
+                android:maxLines="1"
                 />
 
             <TextView
@@ -63,12 +65,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/etTitle"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
                 android:text="Description"
-                android:textColor="@color/black"
+                android:textColor="@color/darkGrey"
                 android:textSize="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 />
 
             <EditText
@@ -76,13 +78,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_below="@id/tvDescription"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:gravity="top"
-                android:background="@color/white"
-                android:hint="Description"
+                android:background="@drawable/bg_rounded_edittext"
                 android:textSize="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:gravity="top"
                 android:padding="8dp"
                 />
 
@@ -93,42 +94,58 @@
                 android:layout_below="@id/etDescription"
                 android:orientation="horizontal"
                 android:weightSum="1"
+                android:layout_marginTop="16dp"
                 >
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical"
                     >
 
                     <TextView
                         android:id="@+id/tvDifficulty"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
                         android:text="Difficulty"
-                        android:textColor="@color/black"
+                        android:textColor="@color/darkGrey"
                         android:textSize="16dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tvDifficultyProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="14dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="2dp"
                         />
 
                     <SeekBar
                         android:id="@+id/sbDifficulty"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_below="@id/tvDifficulty"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="2dp"
+                        android:thumb="@drawable/bg_custom_thumb"
+                        android:min="0"
+                        android:max="10"
                         />
-                </LinearLayout>
 
-                <LinearLayout
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical"
                     >
 
                     <TextView
@@ -136,22 +153,40 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Originality"
-                        android:textColor="@color/black"
+                        android:textColor="@color/darkGrey"
                         android:textSize="16dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/tvOriginalityProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textSize="14dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="16dp"
+                        android:padding="2dp"
                         />
 
                     <SeekBar
                         android:id="@+id/sbOriginality"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_below="@id/tvOriginality"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="16dp"
+                        android:thumb="@drawable/bg_custom_thumb"
+                        android:min="0"
+                        android:max="10"
                         />
-                </LinearLayout>
+
+                </RelativeLayout>
 
             </LinearLayout>
 
@@ -162,6 +197,9 @@
                 android:layout_below="@id/llDiffOrigin"
                 android:orientation="horizontal"
                 android:weightSum="1"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginRight="16dp"
                 >
 
                 <LinearLayout
@@ -174,29 +212,42 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
                         android:text="How's it going?"
-                        android:textColor="@color/black"
+                        android:textColor="@color/darkGrey"
                         android:textSize="16dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
                         />
 
-                    <Spinner
-                        android:id="@+id/spStatus"
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:prompt="@string/prompt"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="32dp"
                         android:background="@color/white"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:paddingBottom="8dp"
-                        android:paddingTop="8dp"
-                        android:backgroundTint="@color/lightGrey"
                         >
 
-                    </Spinner>
+                        <Spinner
+                            android:id="@+id/spStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:prompt="@string/prompt"
+                            android:paddingTop="8dp"
+                            android:paddingRight="8dp"
+                            android:paddingBottom="8dp"/>
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_arrow_drop_down_black_24dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -204,6 +255,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.50"
+                    android:layout_marginLeft="16dp"
                     android:orientation="vertical"
                     >
 
@@ -211,11 +263,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Visibility"
-                        android:textColor="@color/black"
+                        android:textColor="@color/darkGrey"
                         android:textSize="16dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
                         />
 
                     <CheckBox
@@ -223,10 +275,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:button="@drawable/bg_checkbox"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="18dp"
+                        android:text="  Private"
+                        android:textSize="16dp"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
                         />
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -236,13 +292,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_button"
-                android:layout_below="@+id/llCurrentState"
+                android:layout_below="@id/llCurrentState"
                 android:text="Save"
+                android:textSize="14dp"
                 android:textColor="@color/white"
+                android:textAllCaps="false"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
                 />
 
             <Button
@@ -250,17 +307,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:background="@drawable/bg_cancel_button"
+                android:layout_below="@id/llCurrentState"
                 android:layout_toLeftOf="@id/btSave"
-                android:layout_below="@+id/llCurrentState"
-                android:text="Cencel"
+                android:text="Cancel"
+                android:textSize="14dp"
                 android:textColor="@color/white"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp"
+                android:textAllCaps="false"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
                 />
 
         </RelativeLayout>
 
+
     </ScrollView>
 
-</RelativeLayout>
+</LinearLayout>

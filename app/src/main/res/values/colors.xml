@@ -8,15 +8,17 @@
     <color name="black">#000000</color>
     <color name="lightGreen">#2ec97f</color>
     <color name="darkGreen">#25a366</color>
-    <color name="darkGrey">#717374</color>
+    <color name="darkGrey">#8C9096</color>
     <color name="buttonGreen">#00d380</color>
     <color name="lightBlack">#212529</color>
     <color name="lightBLack2">#5A6169</color>
-    <color name="transparentBlack">#ad000000</color>
+    <color name="transparentBlack">#42000000</color>
     <color name="cancelButton">#ff915d</color>
     <color name="ColorPrimary">#FF5722</color>
     <color name="ColorPrimaryDark">#E64A19</color>
     <color name="foreground_material_light">#ffffff</color>
     <color name="background_material_light">#ffffff</color>
-
+    <color name="transparent">#00ffffff</color>
+    <color name="transparentLightGreen">#b42ec97f</color>
+    <color name="commentGrey">#ececec</color>
 </resources>

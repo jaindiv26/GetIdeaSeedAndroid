@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="filter_count">
+        <item quantity="one">%d Filter applied</item>
+        <item quantity="other">%d Filters applied</item>
+    </plurals>
+</resources>
